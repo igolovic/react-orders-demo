@@ -1,0 +1,162 @@
+{
+  "info": {
+    "name": "Orders API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Add Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": 1,\n  \"customerId\": 1,\n  \"orderDate\": \"2025-06-16T00:00:00Z\",\n  \"status\": \"Pending\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orders"]
+        }
+      }
+    },
+    {
+      "name": "Get Orders Paged",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/orders/paged?pageIndex=0&pageSize=10&sortColumn=id&sortDirection=asc&filter=",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orders", "paged"],
+          "query": [
+            { "key": "pageIndex", "value": "0" },
+            { "key": "pageSize", "value": "10" },
+            { "key": "sortColumn", "value": "id" },
+            { "key": "sortDirection", "value": "asc" },
+            { "key": "filter", "value": "" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Order",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": 1,\n  \"customerId\": 1,\n  \"orderDate\": \"2025-06-16T00:00:00Z\",\n  \"status\": \"Shipped\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orders"]
+        }
+      }
+    },
+    {
+      "name": "Delete Order",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/orders?orderId=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orders"],
+          "query": [
+            { "key": "orderId", "value": "1" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Add Order Item",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": 1,\n  \"productId\": 1,\n  \"quantity\": 2\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orderitems",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orderitems"]
+        }
+      }
+    },
+    {
+      "name": "Get Order Items by OrderId",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/orderitems/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orderitems", "1"]
+        }
+      }
+    },
+    {
+      "name": "Update Order Item",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderItemId\": 1,\n  \"orderId\": 1,\n  \"productId\": 1,\n  \"quantity\": 3\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orderitems",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orderitems"]
+        }
+      }
+    },
+    {
+      "name": "Delete Order Item",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/orderitems/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "orderitems", "1"]
+        }
+      }
+    },
+    {
+      "name": "Get All Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        }
+      }
+    },
+    {
+      "name": "Get All Clients",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clients",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clients"]
+        }
+      }
+    }
+  ]
+}
