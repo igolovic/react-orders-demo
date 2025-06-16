@@ -6,7 +6,7 @@ namespace Orders.Infrastructure.Repositories
 {
     public class OrderItemRepository : IOrderItemRepository
     {
-        private OrdersContext ordersContext;
+        private readonly OrdersContext ordersContext;
 
         public OrderItemRepository(OrdersContext ordersContext)
         {
@@ -29,11 +29,9 @@ namespace Orders.Infrastructure.Repositories
 
         public async Task<IEnumerable<OrderItem>> GetOrderItemsByOrderId(int orderId)
         {
-            var orderItems = from orderItem in ordersContext.OrderItems
-                             where orderItem.OrderId == orderId
-                             select orderItem;
-
-            return await orderItems.ToListAsync();
+            return await ordersContext.OrderItems
+                .Where(orderItem => orderItem.OrderId == orderId)
+                .ToListAsync();
         }
 
         public async Task SaveChangesAsync()

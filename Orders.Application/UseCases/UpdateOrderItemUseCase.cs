@@ -21,6 +21,5 @@ public class UpdateOrderItemUseCase
 
         await orderRepository.UpdateOrderItemAsync(order);
         await orderRepository.SaveChangesAsync();
-
     }
 }
