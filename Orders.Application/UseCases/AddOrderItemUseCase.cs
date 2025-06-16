@@ -10,7 +10,7 @@ public class AddOrderItemUseCase
         this.orderItemRepository = orderItemRepository;
     }
 
-    public async Task<int> Execute(OrderItemDto dto)
+    public async Task Execute(OrderItemDto dto)
     {
         var order = new OrderItem
         {
@@ -20,7 +20,5 @@ public class AddOrderItemUseCase
         };
         await orderItemRepository.AddOrderItemAsync(order);
         await orderItemRepository.SaveChangesAsync();
-
-        return order.Id;
     }
 }

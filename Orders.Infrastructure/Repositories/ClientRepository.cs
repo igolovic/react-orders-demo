@@ -4,7 +4,7 @@ using Orders.Domain.Interfaces;
 
 namespace Orders.Infrastructure.Repositories
 {
-    internal class ClientRepository : IClientRepository
+    public class ClientRepository : IClientRepository
     {
         private OrdersContext ordersContext;
 

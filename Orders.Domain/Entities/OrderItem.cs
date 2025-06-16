@@ -2,7 +2,6 @@
 {
     public class OrderItem
     {
-        public int Id { get; set; }
         public required int OrderId { get; set; }
         public required int ProductId { get; set; }
         public int Quantity { get; set; }

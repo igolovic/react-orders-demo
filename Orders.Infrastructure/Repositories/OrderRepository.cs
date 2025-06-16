@@ -4,7 +4,7 @@ using Orders.Domain.Interfaces;
 
 namespace Orders.Infrastructure.Repositories
 {
-    internal class OrderRepository : IOrderRepository
+    public class OrderRepository : IOrderRepository
     {
         private OrdersContext ordersContext;
 
@@ -34,11 +34,12 @@ namespace Orders.Infrastructure.Repositories
         {
             return await ordersContext.Orders
                 .Include(o => o.Client)
+                .Include(o => o.Items)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
         public async Task<IEnumerable<OrderSummary>> GetOrdersPaged(
-            int pageIndex, int pageSize, string sortColumn, string sortDirection, string filter)
+            int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
         {
             var result = await ordersContext.OrderSummaries
                 .FromSqlInterpolated(

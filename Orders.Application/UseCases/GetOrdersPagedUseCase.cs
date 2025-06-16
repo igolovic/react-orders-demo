@@ -12,7 +12,7 @@ namespace Orders.Application.UseCases
             this.orderRepository = orderRepository;
         }
 
-        public async Task<IEnumerable<PagedOrderDto>> Execute(int pageIndex, int pageSize, string sortColumn, string sortDirection, string filter)
+        public async Task<IEnumerable<PagedOrderDto>> Execute(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
         {
             var orderSummaries = await orderRepository.GetOrdersPaged(pageIndex, pageSize, sortColumn, sortDirection, filter);
             return orderSummaries.Select(os => new PagedOrderDto

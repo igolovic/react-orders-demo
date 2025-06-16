@@ -28,7 +28,7 @@ namespace Orders.WebApi
         }
 
         [HttpGet("paged")]
-        public async Task<IActionResult> GetOrdersPaged(int pageIndex, int pageSize, string sortColumn, string sortDirection, string filter)
+        public async Task<IActionResult> GetOrdersPaged(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
         {
             var result = await getOrdersPagedUseCase.Execute(pageIndex, pageSize, sortColumn, sortDirection, filter);
             return Ok(result);
@@ -42,9 +42,9 @@ namespace Orders.WebApi
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int orderId)
+        public async Task<IActionResult> Delete(int orderId, int productId)
         {
-            await deleteOrderUseCase.Execute(orderId);
+            await deleteOrderUseCase.Execute(orderId, productId);
             return Ok();
         }
     }

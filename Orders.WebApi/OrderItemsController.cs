@@ -44,10 +44,10 @@ namespace Orders.WebApi
             return Ok();
         }
 
-        [HttpDelete("{orderItemId}")]
-        public async Task<IActionResult> Delete(int orderItemId)
+        [HttpDelete("{orderItemId}/{productId}")]
+        public async Task<IActionResult> Delete(int orderItemId, int productId)
         {
-            await deleteOrderItemUseCase.Execute(orderItemId);
+            await deleteOrderItemUseCase.Execute(orderItemId, productId);
             return Ok();
         }
     }

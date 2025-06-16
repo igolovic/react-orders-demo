@@ -6,7 +6,7 @@ namespace Orders.Domain.Interfaces
     {
         Task AddOrderItemAsync(OrderItem order);
         Task UpdateOrderItemAsync(OrderItem order);
-        Task DeleteOrderItemAsync(int orderId);
+        Task DeleteOrderItemAsync(int orderId, int productId);
         Task<IEnumerable<OrderItem>> GetOrderItemsByOrderId(int orderId);
         Task SaveChangesAsync();
     }

@@ -1,7 +1,10 @@
-﻿namespace Orders.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Orders.Domain.Entities
 {
     public class Order
     {
+        [Key]
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateModified { get; set; }

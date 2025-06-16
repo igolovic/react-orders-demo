@@ -9,9 +9,9 @@ public class DeleteOrderItemUseCase
         this.orderItemRepository = orderItemRepository;
     }
 
-    public async Task Execute(int orderItemId)
+    public async Task Execute(int orderItemId, int productId)
     {
-        await orderItemRepository.DeleteOrderItemAsync(orderItemId);
+        await orderItemRepository.DeleteOrderItemAsync(orderItemId, productId);
         await orderItemRepository.SaveChangesAsync();
     }
 }

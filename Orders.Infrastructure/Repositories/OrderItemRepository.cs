@@ -4,7 +4,7 @@ using Orders.Domain.Interfaces;
 
 namespace Orders.Infrastructure.Repositories
 {
-    internal class OrderItemRepository : IOrderItemRepository
+    public class OrderItemRepository : IOrderItemRepository
     {
         private OrdersContext ordersContext;
 
@@ -18,9 +18,9 @@ namespace Orders.Infrastructure.Repositories
             await ordersContext.OrderItems.AddAsync(orderItem);
         }
 
-        public async Task DeleteOrderItemAsync(int orderId)
+        public async Task DeleteOrderItemAsync(int orderId, int productId)
         {
-            var orderItem = await ordersContext.OrderItems.FindAsync(orderId);
+            var orderItem = await ordersContext.OrderItems.FindAsync(orderId, productId);
             if (orderItem != null)
             {
                 ordersContext.OrderItems.Remove(orderItem);
