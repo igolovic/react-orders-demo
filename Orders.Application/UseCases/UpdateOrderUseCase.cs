@@ -14,14 +14,14 @@ public class UpdateOrderUseCase
 
     public async Task Execute(OrderUpdateDto dto)
     {
-        var existingOrder = await orderRepository.GetOrderByIdAsync(dto.Id);
+        var existingOrder = await orderRepository.GetOrderByIdAsync(dto.OrderId);
         if (existingOrder == null)
             throw new Exception("Order not found.");
 
         existingOrder.ClientId = dto.ClientId;
         existingOrder.DateModified = DateTime.UtcNow;
 
-        var oldItems = existingOrder.Items.ToList();
+        var oldItems = existingOrder.OrderItems.ToList();
         var newItems = dto.Items;
 
         foreach (var item in newItems)
@@ -37,9 +37,10 @@ public class UpdateOrderUseCase
                 // Add new item if it doesn't exist in the old items
                 var newItem = new OrderItem
                 {
+                    OrderItemId = item.OrderItemId,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    OrderId = existingOrder.Id // Set the order ID
+                    OrderId = existingOrder.OrderId
                 };
                 await orderItemRepository.AddOrderItemAsync(newItem);
             }

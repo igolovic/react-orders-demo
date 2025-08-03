@@ -1,27 +1,39 @@
 ﻿using Orders.Application.DTOs;
-using Orders.Domain.Interfaces;
+using Orders.Application.Services;
 
 namespace Orders.Application.UseCases
 {
     public class GetOrdersPagedUseCase
     {
-        private IOrderRepository orderRepository { get; set; }
+        private IOrderQueryService orderQueryService { get; set; }
 
-        public GetOrdersPagedUseCase(IOrderRepository orderRepository)
+        public GetOrdersPagedUseCase(IOrderQueryService orderQueryService)
         {
-            this.orderRepository = orderRepository;
+            this.orderQueryService = orderQueryService;
         }
 
         public async Task<IEnumerable<PagedOrderDto>> Execute(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
         {
-            var orderSummaries = await orderRepository.GetOrdersPaged(pageIndex, pageSize, sortColumn, sortDirection, filter);
-            return orderSummaries.Select(os => new PagedOrderDto
-            {
-                Id = os.Id,
-                DateCreated = os.DateCreated,
-                DateModified = os.DateModified,
-                ClientName = os.ClientName
-            });
+            var orders = await orderQueryService.GetOrdersPaged(pageIndex, pageSize, sortColumn, sortDirection, filter);
+            return orders;
+            //.Select(os => new PagedOrderDto
+            // {
+            //     Id = os.Id,
+            //     DateCreated = os.DateCreated,
+            //     DateModified = os.DateModified,
+            //     ClientId = os.ClientId,
+            //     ClientName = os.ClientName,
+            //     OrderItems = os.OrderItems
+            //.Select(oi => new OrderItemDto
+            //{
+            //    OrderItemId = oi.OrderItemId,
+            //    OrderId = oi.OrderId,
+            //    ProductId = oi.ProductId,
+            //    ProductName = oi.ProductName,
+            //    Quantity = oi.Quantity,
+            //    UnitPriceOnCreatedDate = oi.UnitPriceOnCreatedDate
+            //}).ToList()
+            //});
         }
     }
 }

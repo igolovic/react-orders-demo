@@ -14,6 +14,7 @@ public class AddOrderItemUseCase
     {
         var order = new OrderItem
         {
+            OrderItemId = dto.OrderItemId,
             OrderId = dto.OrderId,
             ProductId = dto.ProductId,
             Quantity = dto.Quantity

@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Orders.Application.Services;
 using Orders.Application.UseCases;
 using Orders.Domain.Interfaces;
 using Orders.Infrastructure;
+using Orders.Infrastructure.OrderQueryService;
 using Orders.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,18 +29,32 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IOrderQueryService, OrderQueryService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseExceptionHandler("/error");
 }
 
 app.MapControllers();

@@ -9,7 +9,6 @@ public class OrdersContext : DbContext
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
-    public DbSet<OrderSummary> OrderSummaries => Set<OrderSummary>();
 
     public OrdersContext(DbContextOptions<OrdersContext> options) : base(options)
     {
@@ -18,7 +17,7 @@ public class OrdersContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Order>()
-            .HasMany(o => o.Items)
+            .HasMany(o => o.OrderItems)
             .WithOne(oi => oi.Order)
             .HasForeignKey(oi => oi.OrderId);
         modelBuilder.Entity<OrderItem>()

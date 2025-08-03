@@ -16,8 +16,9 @@ public class AddOrderUseCase
         {
             ClientId = dto.ClientId,
             DateCreated = DateTime.UtcNow,
-            Items = dto.Items.Select(i => new OrderItem
+            OrderItems = dto.Items.Select(i => new OrderItem
             {
+                OrderItemId = i.OrderItemId,
                 ProductId = i.ProductId,
                 Quantity = i.Quantity,
                 OrderId = 0, // Temporary value, will be set by the repository
@@ -26,6 +27,6 @@ public class AddOrderUseCase
         await orderRepository.AddOrderAsync(order);
         await orderRepository.SaveChangesAsync();
 
-        return order.Id;
+        return order.OrderId;
     }
 }

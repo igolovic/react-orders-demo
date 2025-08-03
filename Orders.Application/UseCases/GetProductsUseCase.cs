@@ -13,6 +13,6 @@ public class GetProductsUseCase
     public async Task<IEnumerable<ProductDto>> Execute()
     {
         var products = await productRepository.GetAllAsync();
-        return products.Select(p => new ProductDto { Id = p.Id, Name = p.Name, UnitPrice = p.UnitPrice });
+        return products.Select(p => new ProductDto { ProductId = p.ProductId, Name = p.Name, UnitPrice = p.UnitPrice });
     }
 }

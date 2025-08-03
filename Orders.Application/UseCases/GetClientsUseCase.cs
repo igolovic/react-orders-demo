@@ -13,6 +13,6 @@ public class GetClientsUseCase
     public async Task<IEnumerable<ClientDto>> Execute()
     {
         var clients = await clientRepository.GetAllAsync();
-        return clients.Select(c => new ClientDto { Id = c.Id, Name = c.Name });
+        return clients.Select(c => new ClientDto { ClientId = c.ClientId, Name = c.Name });
     }
 }

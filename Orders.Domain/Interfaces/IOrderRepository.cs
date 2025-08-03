@@ -8,7 +8,6 @@ namespace Orders.Domain.Interfaces
         void UpdateOrderAsync(Order order);
         Task DeleteOrderAsync(int orderId);
         Task<Order?> GetOrderByIdAsync(int orderId);
-        Task<IEnumerable<OrderSummary>> GetOrdersPaged(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null);
         Task SaveChangesAsync();
     }
 }

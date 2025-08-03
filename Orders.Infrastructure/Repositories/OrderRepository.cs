@@ -34,24 +34,8 @@ namespace Orders.Infrastructure.Repositories
         {
             return await ordersContext.Orders
                 .Include(o => o.Client)
-                .Include(o => o.Items)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
-        }
-
-        public async Task<IEnumerable<OrderSummary>> GetOrdersPaged(
-            int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
-        {
-            var result = await ordersContext.OrderSummaries
-                .FromSqlInterpolated(
-                    $@"EXEC sp_GetOrdersPaged 
-                        @PageIndex = {pageIndex}, 
-                        @PageSize = {pageSize}, 
-                        @SortColumn = {sortColumn}, 
-                        @SortDirection = {sortDirection}, 
-                        @Filter = {filter}")
-                .ToListAsync();
-
-            return result;
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
         }
 
         public void UpdateOrderAsync(Order order)
