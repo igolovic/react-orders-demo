@@ -6,6 +6,11 @@ import './App.css'
 
 function App(){
   const [orders, setOrders] = useState([]);
+  const [newNotAddedOrderItem, setNewNotAddedOrderItem] = useState({
+    productName: '',
+    quantity: 0,
+    unitPriceOnCreatedDate: 0
+  });
   const [isAddOrderMode, setIsAddOrderMode] = useState(false);
   const [isEditOrderMode, setIsEditOrderMode] = useState(false);
   const [selectedOrder, handleSelectOrder] = useState(null);
@@ -123,6 +128,8 @@ function App(){
       selectedOrder={selectedOrder}
       isAddOrderMode={isAddOrderMode} 
       isEditOrderMode={isEditOrderMode}
+      newNotAddedOrderItem={newNotAddedOrderItem}
+      setNewNotAddedOrderItem={setNewNotAddedOrderItem}
       onOrderItemsChange={handleOrderItemsChange}
       />
     </>

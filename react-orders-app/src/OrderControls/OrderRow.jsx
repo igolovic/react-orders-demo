@@ -8,7 +8,8 @@ function OrderRow({order, selectedOrder, isAddOrderMode, isEditOrderMode, onSele
   return (
     <>
       <tr
-        onClick={() => onSelectOrder(order)}
+        // Only allow new selection when no order is being edited or added
+        onClick={() => isEditButtonEnabled && onSelectOrder(order)}
         style={{
           background: selectedOrder?.orderId === order.orderId ? "#e0e0e0" : "transparent",
           cursor: "pointer"

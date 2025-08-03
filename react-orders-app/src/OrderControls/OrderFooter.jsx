@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ADD_ORDER_MODE_STATUS_STARTED, ADD_ORDER_MODE_STATUS_ENDED_WITH_SAVE, ADD_ORDER_MODE_STATUS_ENDED_WITH_CANCEL } from '../constants' // Import constants for order
 
 function OrderFooter({isAddOrderMode, selectedOrder, isEditOrderMode, onAddOrderClick}){
@@ -6,6 +6,8 @@ function OrderFooter({isAddOrderMode, selectedOrder, isEditOrderMode, onAddOrder
   const [newOrder, setNewOrder] = useState({
     clientName: '',
   });
+
+  const isNewOrderBeingEdited = (isAddOrderMode && !isEditOrderMode && selectedOrder === null);
 
   function handleAddNewOrderClick() {
     onAddOrderClick(ADD_ORDER_MODE_STATUS_STARTED, newOrder);
@@ -44,8 +46,6 @@ function OrderFooter({isAddOrderMode, selectedOrder, isEditOrderMode, onAddOrder
       console.error("Fetch error:", error);
     });
   }
-
-  const isNewOrderBeingEdited = (isAddOrderMode && !isEditOrderMode && selectedOrder === null);
 
   return (
     <>
