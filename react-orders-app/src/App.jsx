@@ -1,62 +1,92 @@
 import { useEffect, useState } from 'react'
 import OrderTable from './OrderControls/OrderTable'
 import OrderItemTable from './OrderItemControls/OrderItemTable'
-import { ADD_ORDER_MODE_STATUS_STARTED, ADD_ORDER_MODE_STATUS_ENDED_WITH_SAVE, ADD_ORDER_MODE_STATUS_ENDED_WITH_CANCEL } from './constants' // Import constants for order
 import './App.css'
+import { fetchOrders, addOrder } from './api/orderApi';
 
 function App(){
   const [orders, setOrders] = useState([]);
-  const [newNotAddedOrderItem, setNewNotAddedOrderItem] = useState({
-    productName: '',
-    quantity: 0,
-    unitPriceOnCreatedDate: 0
-  });
   const [isAddOrderMode, setIsAddOrderMode] = useState(false);
   const [isEditOrderMode, setIsEditOrderMode] = useState(false);
-  const [selectedOrder, handleSelectOrder] = useState(null);
+  const [selectedOrder, setSelectOrder] = useState(null);
+  const [newNotAddedOrderItem, setNewNotAddedOrderItem] = useState(null);
 
-  function handleAddOrderClick(addOrderModeStatus, newOrder = null) {
-    switch (addOrderModeStatus) {
-      case ADD_ORDER_MODE_STATUS_STARTED:
-        {
-          setIsAddOrderMode(true);
-          handleSelectOrder(null);
-        }
-        break;
-      case ADD_ORDER_MODE_STATUS_ENDED_WITH_SAVE:
-        {
-          setIsAddOrderMode(false);
-          handleSelectOrder(newOrder);
-        }
-        break;
-      case ADD_ORDER_MODE_STATUS_ENDED_WITH_CANCEL:
-        {
-          setIsAddOrderMode(false);
-          handleSelectOrder(null);
-        }
-        break;
-      }
-    setIsEditOrderMode(false);
-  }
+  // Functions to handle order selection and editing
 
   function handleEditOrderClick(editedOrder) {
     setIsAddOrderMode(false);
     setIsEditOrderMode(true);
-    handleSelectOrder(editedOrder);
+    setSelectOrder(editedOrder);
   }
 
   function handleSaveOrderClick(savedOrder) {
     setIsAddOrderMode(false);
     setIsEditOrderMode(false);
-    handleSelectOrder(savedOrder);
+    setSelectOrder(savedOrder);
   }
 
   function handleCancelOrderClick() {
     setIsAddOrderMode(false);
     setIsEditOrderMode(false);
-    handleSelectOrder(null);
+    setSelectOrder(null);
   }
 
+  function handleUpdateOrder(updatedOrder) {
+    const updatedOrders = orders.map(order => {
+      if (order.orderId === updatedOrder.orderId) {
+        return updatedOrder;
+      }
+      return order;
+    });
+    setOrders(updatedOrders);
+    setSelectOrder(updatedOrder);
+  }
+
+  // Functions to handle new order
+
+  function handleNewOrderAddClick() {
+    setIsAddOrderMode(true);
+    setIsEditOrderMode(false);
+
+    setSelectOrder({ 
+      orderId: 0, 
+      clientName: '', 
+      orderItems: [] });
+      
+    setNewNotAddedOrderItem({
+      productName: '',
+      quantity: 0,
+      unitPriceOnCreatedDate: 0
+    });
+  }
+
+  function handleNewOrderSaveClick(newOrderToSave) {
+    const orderToSave = {
+      ...newOrderToSave, orderItems: selectedOrder?.orderItems || []
+    };
+
+    addOrder(orderToSave);
+
+    setIsAddOrderMode(false);
+    setSelectOrder(orderToSave);
+  }
+
+  function handleNewOrderCancelClick() {
+    setIsAddOrderMode(false);
+    setSelectOrder(null);
+  }
+
+  function handleSetSelectedOrder(updatedOrder) {
+    const orderToSave = {
+      ...updatedOrder, orderItems: selectedOrder?.orderItems || []
+    };
+
+    setSelectOrder(orderToSave);
+  }
+
+  // Functions to handle order items change
+
+  // This function is called when order items are added/updated/deleted
   function handleOrderItemsChange(orderWithUpdatedItems) {
     const updatedOrders = orders.map(order => {
       if (order.orderId === orderWithUpdatedItems.orderId) {
@@ -65,49 +95,13 @@ function App(){
       return order;
     });
     setOrders(updatedOrders);
-    handleSelectOrder(orderWithUpdatedItems);
-  }
-
-  function fetchOrders() {
-    const pageIndex = 0;
-    const pageSize = 10;
-    const sortColumn = "id";
-    const sortDirection = "asc";
-    const filter = "";
-    const baseUrl = "http://localhost:5248/api/orders/paged";
-
-    const params = new URLSearchParams({
-      pageIndex,
-      pageSize,
-      sortColumn,
-      sortDirection,
-      filter
-    });
-
-      // Fetch orders from the API with pagination, sorting, and filtering
-    fetch(`${baseUrl}?${params.toString()}`, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      }
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then(data => {
-        setOrders(data);
-        console.log(data);
-      })
-      .catch(error => {
-        console.error("Fetch error:", error);
-      });
+    setSelectOrder(orderWithUpdatedItems);
   }
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrders()
+      .then(data => setOrders(data))
+      .catch(error => console.error("Fetch error:", error));
   }, []);
 
 
@@ -118,18 +112,22 @@ function App(){
       selectedOrder={selectedOrder}
       isAddOrderMode={isAddOrderMode} 
       isEditOrderMode={isEditOrderMode} 
-      onSelectOrder={handleSelectOrder}
-      onAddOrderClick={handleAddOrderClick}
+      onSelectOrder={handleSetSelectedOrder}
       onEditOrderClick={handleEditOrderClick}
       onSaveOrderClick={() => handleSaveOrderClick()}
-      onCancelOrderClick={() => handleCancelOrderClick()} 
+      onCancelOrderClick={() => handleCancelOrderClick()}
+      onUpdateOrder={handleUpdateOrder}
+      onNewOrderAddClick={handleNewOrderAddClick}
+      onNewOrderSaveClick={handleNewOrderSaveClick}
+      onNewOrderCancelClick={handleNewOrderCancelClick}
+      updateSelectedOrder={handleSetSelectedOrder}
       />
       <OrderItemTable 
       selectedOrder={selectedOrder}
       isAddOrderMode={isAddOrderMode} 
       isEditOrderMode={isEditOrderMode}
       newNotAddedOrderItem={newNotAddedOrderItem}
-      setNewNotAddedOrderItem={setNewNotAddedOrderItem}
+      updateNewNotAddedOrderItem={setNewNotAddedOrderItem}
       onOrderItemsChange={handleOrderItemsChange}
       />
     </>

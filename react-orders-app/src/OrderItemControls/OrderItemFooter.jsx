@@ -1,6 +1,6 @@
 
 
-function OrderItemFooter({isAddOrderMode, isEditOrderMode, newNotAddedOrderItem, setNewNotAddedOrderItem, onAddNewOrderItem}){
+function OrderItemFooter({isAddOrderMode, isEditOrderMode, newNotAddedOrderItem, updateNewNotAddedOrderItem, onAddNewOrderItemClick}){
 
   const isNewOrderBeingEdited = (isAddOrderMode || isEditOrderMode);
 
@@ -9,25 +9,25 @@ function OrderItemFooter({isAddOrderMode, isEditOrderMode, newNotAddedOrderItem,
       <tr>
         <td>
           {<input type="text"
-          value={newNotAddedOrderItem.productName} 
+          value={newNotAddedOrderItem?.productName ?? ""} 
           disabled={!isNewOrderBeingEdited}
-          onChange={e => setNewNotAddedOrderItem({...newNotAddedOrderItem, productName: e.target.value})} />}
+          onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, productName: e.target.value})} />}
         </td>
         <td>
-          {<input type="number" 
-          value={newNotAddedOrderItem.quantity} 
+          {<input type="number"
+          value={newNotAddedOrderItem?.quantity ?? 0}
           disabled={!isNewOrderBeingEdited}
-          onChange={e => setNewNotAddedOrderItem({...newNotAddedOrderItem, quantity: e.target.value})} />}</td>
+          onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, quantity: e.target.value})} />}</td>
         <td>
           {<input type="number"
-          value={newNotAddedOrderItem.unitPriceOnCreatedDate} 
+          value={newNotAddedOrderItem?.unitPriceOnCreatedDate ?? 0}
           disabled={!isNewOrderBeingEdited}
-          onChange={e => setNewNotAddedOrderItem({...newNotAddedOrderItem, unitPriceOnCreatedDate: e.target.value})} />}
+          onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, unitPriceOnCreatedDate: e.target.value})} />}
         </td>
         <td>
           <button 
           disabled={!isNewOrderBeingEdited}
-          onClick={() => onAddNewOrderItem(newNotAddedOrderItem)}>Add order item</button>
+          onClick={() => onAddNewOrderItemClick(newNotAddedOrderItem)}>Add order item</button>
         </td>
       </tr>
     </>

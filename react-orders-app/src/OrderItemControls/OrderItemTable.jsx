@@ -2,20 +2,16 @@ import OrderItemHeader from "./OrderItemHeader"
 import OrderItemRow from "./OrderItemRow"
 import OrderItemFooter from "./OrderItemFooter"
 
-function OrderItemTable({selectedOrder, newNotAddedOrderItem, setNewNotAddedOrderItem, isAddOrderMode, isEditOrderMode, onOrderItemsChange}){
+function OrderItemTable({selectedOrder, newNotAddedOrderItem, updateNewNotAddedOrderItem, isAddOrderMode, isEditOrderMode, onOrderItemsChange}){
 
   function isDuplicateProductName(orderItems, productName) {
     // Check if the product name already exists in the order items
-    // Exclude the current order item if excludeOrderItemId is provided
     return orderItems.some(item =>
       item.productName === productName
-      // && (
-      //   excludeOrderItemId == null || GetOrderItemIdentifierFromProductAndOrderId(item) === excludeOrderItemId
-      // )
     );
   }
   
-  function handleUpdateOrderItem(updatedOrderItem, checkDuplicateProductInOrderItems) {
+  function handleUpdateOrderItem(updatedOrderItem, oldProductName, checkDuplicateProductInOrderItems) {
     if (checkDuplicateProductInOrderItems && isDuplicateProductName(selectedOrder.orderItems, updatedOrderItem.productName)) {
       alert("Order item with this product name already exists.");
       return;
@@ -23,20 +19,20 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, setNewNotAddedOrde
     let updatedSelectedOrder = {
       ...selectedOrder,
       orderItems: selectedOrder.orderItems.map(item =>
-        item.orderItemId === updatedOrderItem.orderItemId ? updatedOrderItem : item
+        item.productName === oldProductName ? updatedOrderItem : item
       )
     };
     onOrderItemsChange(updatedSelectedOrder);
   }
 
-  function handleDeleteOrderItem(deletedOrderItem) {
+  function handleDeleteOrderItemClick(deletedOrderItem) {
     selectedOrder.orderItems = selectedOrder.orderItems.filter(
       oi => GetOrderItemIdentifierFromProductAndOrderId(oi) !== GetOrderItemIdentifierFromProductAndOrderId(deletedOrderItem)
     );
     onOrderItemsChange(selectedOrder);
   }
 
-  function handleAddOrderItem(addedOrderItem) {
+  function handleAddOrderItemClick(addedOrderItem) {
     if (isDuplicateProductName(selectedOrder.orderItems, addedOrderItem.productName)) {
       alert("Order item with this product name already exists.");
       return;
@@ -51,7 +47,7 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, setNewNotAddedOrde
 
     // Reset new row item after adding
     // This assumes newNotAddedOrderItem is used to track the new item being added
-    setNewNotAddedOrderItem({
+    updateNewNotAddedOrderItem({
       orderItemId: selectedOrder.orderId,
       orderId: null,
       productId: null,
@@ -80,7 +76,7 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, setNewNotAddedOrde
                 isAddOrderMode={isAddOrderMode}
                 isEditOrderMode={isEditOrderMode}
                 onUpdateOrderItem={handleUpdateOrderItem}
-                onDeleteOrderItem={handleDeleteOrderItem}
+                onDeleteOrderItemClick={handleDeleteOrderItemClick}
               />
             );
           })}
@@ -88,8 +84,8 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, setNewNotAddedOrde
             isAddOrderMode={isAddOrderMode}
             isEditOrderMode={isEditOrderMode}
             newNotAddedOrderItem={newNotAddedOrderItem}
-            setNewNotAddedOrderItem={setNewNotAddedOrderItem}
-            onAddNewOrderItem={handleAddOrderItem}
+            updateNewNotAddedOrderItem={updateNewNotAddedOrderItem}
+            onAddNewOrderItemClick={handleAddOrderItemClick}
           />
         </tbody>
       </table>
