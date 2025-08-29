@@ -20,15 +20,7 @@ public class OrderDto
             DateCreated = order.DateCreated,
             DateModified = order.DateModified,
             OrderItems = order.OrderItems?
-                .Select(oi => new OrderItemDto
-                {
-                    OrderItemId = oi.OrderItemId,
-                    OrderId = oi.OrderId,
-                    ProductId = oi.ProductId,
-                    ProductName = oi.Product?.Name,
-                    Quantity = oi.Quantity,
-                    UnitPriceOnCreatedDate = oi.UnitPriceOnCreatedDate
-                })
+                .Select(oi => (OrderItemDto)oi)
                 .ToList() ?? new List<OrderItemDto>()
         };
     }

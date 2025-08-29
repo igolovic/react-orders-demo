@@ -30,6 +30,7 @@ namespace Orders.Infrastructure.Repositories
         public async Task<IEnumerable<OrderItem>> GetOrderItemsByOrderId(int orderId)
         {
             return await ordersContext.OrderItems
+                .Include(o => o.Product)
                 .Where(orderItem => orderItem.OrderId == orderId)
                 .ToListAsync();
         }

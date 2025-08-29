@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import OrderTable from './OrderControls/OrderTable'
 import OrderItemTable from './OrderItemControls/OrderItemTable'
 import './App.css'
-import { fetchOrders, saveOrder, getClients, getProducts } from './api/orderApi';
+import { fetchOrders, saveOrder, getClients, getProducts, deleteOrder } from './api/orderApi';
 
 function App(){
   const [orders, setOrders] = useState([]);
@@ -62,6 +62,13 @@ function App(){
     });
     setOrders(updatedOrders);
     setSelectOrder(updatedOrder);
+  }
+
+  async function handleDeleteExistingOrderClick(orderToDelete) {
+    await deleteOrder(orderToDelete.orderId);
+    const dbOrders = await fetchOrders();
+    setOrders(dbOrders);
+    setSelectOrder(null);
   }
 
   // Functions to handle new order
@@ -138,6 +145,7 @@ function App(){
       onNewOrderSaveClick={handleNewOrderSaveClick}
       onNewOrderCancelClick={handleNewOrderCancelClick}
       onUpdateOrderDataInUi={handelUpdateOrderDataInUi}
+      onDeleteExistingOrderClick={handleDeleteExistingOrderClick}
       />
       <OrderItemTable 
       products={products}

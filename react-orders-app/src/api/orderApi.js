@@ -38,6 +38,15 @@ export async function saveOrder(order, isNew) {
   return response.json();
 }
 
+export async function deleteOrder(orderId){
+  const baseUrl = "http://localhost:5248/api/orders";
+  const response = await fetch(`${baseUrl}/${orderId}`, {
+    method: "DELETE",
+    headers: { "Accept": "application/json" }
+  });
+  if (!response.ok) throw new Error("Network response was not ok");
+}
+
 export async function getClients(){
   const response = await fetch("http://localhost:5248/api/clients", {
     method: "GET",

@@ -1,6 +1,6 @@
 
 
-function OrderRow({clients, order, selectedOrder, isAddOrderMode, isEditOrderMode, onSetSelectedOrder, onEditExistingOrderClick, onSaveExistingOrderClick, onCancelExistingOrderClick, onUpdateOrderDataInUi}) {
+function OrderRow({clients, order, selectedOrder, isAddOrderMode, isEditOrderMode, onSetSelectedOrder, onEditExistingOrderClick, onSaveExistingOrderClick, onCancelExistingOrderClick, onUpdateOrderDataInUi, onDeleteExistingOrderClick}) {
 
   const isRowBeingEdited = (!isAddOrderMode && isEditOrderMode && selectedOrder && selectedOrder?.orderId === order.orderId);
   const isEditButtonEnabled = !isAddOrderMode && !isEditOrderMode;
@@ -39,6 +39,10 @@ function OrderRow({clients, order, selectedOrder, isAddOrderMode, isEditOrderMod
         {isRowBeingEdited
           &&
           <button onClick={() => onCancelExistingOrderClick()}>Cancel</button>
+        }
+        {!isRowBeingEdited
+          &&
+          <button onClick={() => onDeleteExistingOrderClick(order)} disabled={!isEditButtonEnabled}>Delete</button>
         }
       </td>
     </tr>

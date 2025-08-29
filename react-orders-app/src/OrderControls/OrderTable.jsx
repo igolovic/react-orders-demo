@@ -2,7 +2,7 @@ import OrderHeader from './OrderHeader'
 import OrderRow from './OrderRow' 
 import OrderFooter from './OrderFooter'
 
-function OrderTable({clients, orders, selectedOrder, isAddOrderMode, isEditOrderMode, onSetSelectedOrder, onEditExistingOrderClick, onSaveExistingOrderClick, onCancelExistingOrderClick, onNewOrderAddClick, onNewOrderSaveClick, onNewOrderCancelClick, onUpdateOrderDataInUi}) {
+function OrderTable({clients, orders, selectedOrder, isAddOrderMode, isEditOrderMode, onSetSelectedOrder, onEditExistingOrderClick, onSaveExistingOrderClick, onCancelExistingOrderClick, onNewOrderAddClick, onNewOrderSaveClick, onNewOrderCancelClick, onUpdateOrderDataInUi, onDeleteExistingOrderClick}) {
 
   return (
     <>
@@ -22,6 +22,7 @@ function OrderTable({clients, orders, selectedOrder, isAddOrderMode, isEditOrder
           onSaveExistingOrderClick={() => onSaveExistingOrderClick(order)}
           onCancelExistingOrderClick={onCancelExistingOrderClick}
           onUpdateOrderDataInUi={onUpdateOrderDataInUi}
+          onDeleteExistingOrderClick={() => onDeleteExistingOrderClick(order)}
           />
         ))}
         <OrderFooter 

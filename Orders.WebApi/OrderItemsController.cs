@@ -43,12 +43,5 @@ namespace Orders.WebApi
             await updateOrderItemUseCase.Execute(orderItem);
             return Ok();
         }
-
-        [HttpDelete("{orderItemId}/{productId}")]
-        public async Task<IActionResult> Delete(int orderItemId, int productId)
-        {
-            await deleteOrderItemUseCase.Execute(orderItemId, productId);
-            return Ok();
-        }
     }
 }

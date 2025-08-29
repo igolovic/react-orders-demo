@@ -12,12 +12,12 @@ public class DeleteOrderUseCase
 
     }
 
-    public async Task Execute(int orderId, int productId)
+    public async Task Execute(int orderId)
     {
-        var items = await orderItemRepository.GetOrderItemsByOrderId(orderId);
-        foreach (var item in items)
+        var orderItems = await orderItemRepository.GetOrderItemsByOrderId(orderId);
+        foreach (var orderItem in orderItems)
         {
-            await orderItemRepository.DeleteOrderItemAsync(orderId, productId);
+            await orderItemRepository.DeleteOrderItemAsync(orderId, orderItem.Product.ProductId);
         }
 
         await orderRepository.DeleteOrderAsync(orderId);
