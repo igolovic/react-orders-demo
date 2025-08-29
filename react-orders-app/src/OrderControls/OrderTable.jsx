@@ -2,7 +2,7 @@ import OrderHeader from './OrderHeader'
 import OrderRow from './OrderRow' 
 import OrderFooter from './OrderFooter'
 
-function OrderTable({orders, selectedOrder, isAddOrderMode, isEditOrderMode, onSelectOrder, onEditOrderClick, onSaveOrderClick, onCancelOrderClick, onUpdateOrder, onNewOrderAddClick, onNewOrderSaveClick, onNewOrderCancelClick, updateSelectedOrder}) {
+function OrderTable({clients, orders, selectedOrder, isAddOrderMode, isEditOrderMode, onSetSelectedOrder, onEditExistingOrderClick, onSaveExistingOrderClick, onCancelExistingOrderClick, onNewOrderAddClick, onNewOrderSaveClick, onNewOrderCancelClick, onUpdateOrderDataInUi}) {
 
   return (
     <>
@@ -12,25 +12,27 @@ function OrderTable({orders, selectedOrder, isAddOrderMode, isEditOrderMode, onS
         {orders.map(order => (
           <OrderRow
           key={order.orderId} 
+          clients={clients}
           order={order} 
           selectedOrder={selectedOrder}
           isAddOrderMode={isAddOrderMode}
           isEditOrderMode={isEditOrderMode}
-          onSelectOrder={() => onSelectOrder(order)}
-          onEditOrderClick={() => onEditOrderClick(order)}
-          onSaveOrderClick={() => onSaveOrderClick(order)}
-          onCancelOrderClick={onCancelOrderClick}
-          onUpdateOrder={onUpdateOrder}
+          onSetSelectedOrder={() => onSetSelectedOrder(order)}
+          onEditExistingOrderClick={() => onEditExistingOrderClick(order)}
+          onSaveExistingOrderClick={() => onSaveExistingOrderClick(order)}
+          onCancelExistingOrderClick={onCancelExistingOrderClick}
+          onUpdateOrderDataInUi={onUpdateOrderDataInUi}
           />
         ))}
         <OrderFooter 
+          clients={clients}
           selectedOrder={selectedOrder}
           isAddOrderMode={isAddOrderMode} 
           isEditOrderMode={isEditOrderMode} 
-          onUpdateOrder={onUpdateOrder}
           onNewOrderSaveClick={onNewOrderSaveClick}
           onNewOrderAddClick={onNewOrderAddClick}
           onNewOrderCancelClick={onNewOrderCancelClick}
+          onUpdateOrderDataInUi={onUpdateOrderDataInUi}
           />
       </tbody>
     </table>

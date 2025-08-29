@@ -2,24 +2,23 @@ import OrderItemHeader from "./OrderItemHeader"
 import OrderItemRow from "./OrderItemRow"
 import OrderItemFooter from "./OrderItemFooter"
 
-function OrderItemTable({selectedOrder, newNotAddedOrderItem, updateNewNotAddedOrderItem, isAddOrderMode, isEditOrderMode, onOrderItemsChange}){
+function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNewNotAddedOrderItem, isAddOrderMode, isEditOrderMode, onOrderItemsChange}){
 
-  function isDuplicateProductName(orderItems, productName) {
-    // Check if the product name already exists in the order items
+  function isDuplicateProduct(orderItems, productId) {
     return orderItems.some(item =>
-      item.productName === productName
+      item.productId === productId
     );
   }
   
-  function handleUpdateOrderItem(updatedOrderItem, oldProductName, checkDuplicateProductInOrderItems) {
-    if (checkDuplicateProductInOrderItems && isDuplicateProductName(selectedOrder.orderItems, updatedOrderItem.productName)) {
-      alert("Order item with this product name already exists.");
+  function handleUpdateOrderItem(updatedOrderItem, oldProductId, checkDuplicateProductInOrderItems) {
+    if (checkDuplicateProductInOrderItems && isDuplicateProduct(selectedOrder.orderItems, updatedOrderItem.productId)) {
+      alert("Order item with this product ID already exists.");
       return;
     }
     let updatedSelectedOrder = {
       ...selectedOrder,
       orderItems: selectedOrder.orderItems.map(item =>
-        item.productName === oldProductName ? updatedOrderItem : item
+        item.productId === oldProductId ? updatedOrderItem : item
       )
     };
     onOrderItemsChange(updatedSelectedOrder);
@@ -33,15 +32,16 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, updateNewNotAddedO
   }
 
   function handleAddOrderItemClick(addedOrderItem) {
-    if (isDuplicateProductName(selectedOrder.orderItems, addedOrderItem.productName)) {
-      alert("Order item with this product name already exists.");
+    if (isDuplicateProduct(selectedOrder.orderItems, addedOrderItem.productId)) {
+      alert("Order item with this product ID already exists.");
       return;
     }
     selectedOrder.orderItems.push(
-      {...addedOrderItem, 
-        orderId: selectedOrder.orderId, 
-        productId: null, 
-        orderItemId: null}
+      {
+        ...addedOrderItem, 
+        orderId: 0, 
+        orderItemId: 0
+      }
     );
     onOrderItemsChange(selectedOrder);
 
@@ -72,6 +72,7 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, updateNewNotAddedO
             return (
               <OrderItemRow
                 key={tempKey}
+                products={products}
                 orderItem={orderItem}
                 isAddOrderMode={isAddOrderMode}
                 isEditOrderMode={isEditOrderMode}
@@ -81,12 +82,13 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, updateNewNotAddedO
             );
           })}
             <OrderItemFooter 
-            isAddOrderMode={isAddOrderMode}
-            isEditOrderMode={isEditOrderMode}
-            newNotAddedOrderItem={newNotAddedOrderItem}
-            updateNewNotAddedOrderItem={updateNewNotAddedOrderItem}
-            onAddNewOrderItemClick={handleAddOrderItemClick}
-          />
+              products={products}
+              isAddOrderMode={isAddOrderMode}
+              isEditOrderMode={isEditOrderMode}
+              newNotAddedOrderItem={newNotAddedOrderItem}
+              updateNewNotAddedOrderItem={updateNewNotAddedOrderItem}
+              onAddNewOrderItemClick={handleAddOrderItemClick}
+            />
         </tbody>
       </table>
     </>
@@ -95,9 +97,6 @@ function OrderItemTable({selectedOrder, newNotAddedOrderItem, updateNewNotAddedO
 
 export default OrderItemTable
 
-// Helper function to generate a unique identifier for order items based on product name and order ID
-// This is used to ensure that each order item can be uniquely identified in the list
-// Used because of temporary items that don't have a database ID yet
 function GetOrderItemIdentifierFromProductAndOrderId(oi) {
-  return `${oi.productName}_${oi.orderId}`;
+  return `${oi.productId}_${oi.orderId}`;
 }

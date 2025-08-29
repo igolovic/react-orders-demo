@@ -10,23 +10,27 @@ public class AddOrderUseCase
         this.orderRepository = orderRepository;
     }
 
-    public async Task<int> Execute(OrderUpdateDto dto)
+    public async Task<OrderDto> Execute(OrderUpdateDto dto)
     {
         var order = new Order
         {
             ClientId = dto.ClientId,
             DateCreated = DateTime.UtcNow,
-            OrderItems = dto.Items.Select(i => new OrderItem
+            OrderItems = dto.OrderItems.Select(oi => new OrderItem
             {
-                OrderItemId = i.OrderItemId,
-                ProductId = i.ProductId,
-                Quantity = i.Quantity,
+                OrderItemId = oi.OrderItemId,
+                ProductId = oi.ProductId,
+                Quantity = oi.Quantity,
+                UnitPriceOnCreatedDate = oi.UnitPriceOnCreatedDate,
                 OrderId = 0, // Temporary value, will be set by the repository
             }).ToList()
         };
         await orderRepository.AddOrderAsync(order);
         await orderRepository.SaveChangesAsync();
 
-        return order.OrderId;
+        var insertedOrder = await orderRepository.GetOrderByIdAsync(order.OrderId);
+
+        var orderDto = (OrderDto)insertedOrder;
+        return orderDto;
     }
 }

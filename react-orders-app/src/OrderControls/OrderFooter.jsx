@@ -1,17 +1,22 @@
-function OrderFooter({isAddOrderMode, selectedOrder, onUpdateOrder, isEditOrderMode, onNewOrderAddClick, onNewOrderSaveClick, onNewOrderCancelClick}) {
+function OrderFooter({clients, isAddOrderMode, selectedOrder, onUpdateOrderDataInUi, isEditOrderMode, onNewOrderAddClick, onNewOrderSaveClick, onNewOrderCancelClick}) {
 
-  const isNewOrderBeingEdited = (isAddOrderMode && !isEditOrderMode);
+  const isNewOrderBeingEdited = (isAddOrderMode && !isEditOrderMode && selectedOrder.orderId === 0);
 
   return (
     <>
       <tr>
       <td></td>
       <td></td>
-      <td>
-        {<input type="text" 
-        value={selectedOrder?.clientName ?? ""} 
-        disabled={!isNewOrderBeingEdited} 
-        onChange={e => onUpdateOrder({...selectedOrder, clientName: e.target.value})} />}
+      <td>     
+      {isNewOrderBeingEdited &&
+        <select id="clientSelectAdd"
+          value={selectedOrder?.clientId ?? ""}
+          onChange={e => onUpdateOrderDataInUi({...selectedOrder, clientId: e.target.value})}
+          disabled={!isNewOrderBeingEdited}>
+          <option value="">Select client</option>
+          {
+          clients.map(client => (<option key={client.clientId} value={client.clientId}>{client.name}</option>))}
+        </select>}
       </td>
         <td>
           {!isNewOrderBeingEdited

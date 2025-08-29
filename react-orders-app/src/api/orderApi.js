@@ -1,8 +1,8 @@
 export async function fetchOrders() {
   const pageIndex = 0;
   const pageSize = 10;
-  const sortColumn = "id";
-  const sortDirection = "asc";
+  const sortColumn = "DateCreated";
+  const sortDirection = "DESC";
   const filter = "";
   const baseUrl = "http://localhost:5248/api/orders/paged";
 
@@ -22,10 +22,12 @@ export async function fetchOrders() {
   return response.json();
 }
 
-export async function addOrder(order) {
+export async function saveOrder(order, isNew) {
   const baseUrl = "http://localhost:5248/api/orders";
-  const response = await fetch(baseUrl, {
-    method: "POST",
+  const method = isNew ? "POST" : "PUT";
+  const url = isNew ? baseUrl : `${baseUrl}/${order.orderId}`;
+  const response = await fetch(url, {
+    method,
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json"
@@ -33,5 +35,23 @@ export async function addOrder(order) {
     body: JSON.stringify(order)
   });
   if (!response.ok) throw new Error("Network response was not ok");
+  return response.json();
+}
+
+export async function getClients(){
+  const response = await fetch("http://localhost:5248/api/clients", {
+    method: "GET",
+    headers: { "Accept": "application/json" }
+  });
+  if (!response.ok) throw new Error("Network response was not ok");
+  return response.json();
+}
+
+export async function getProducts(){
+  const response = await fetch("http://localhost:5248/api/products", {
+    method: "GET",
+    headers: { "Accept": "application/json" }
+  });
+  if(!response.ok) throw new Error("Network response was not ok");
   return response.json();
 }

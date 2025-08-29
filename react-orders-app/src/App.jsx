@@ -2,36 +2,58 @@ import { useEffect, useState } from 'react'
 import OrderTable from './OrderControls/OrderTable'
 import OrderItemTable from './OrderItemControls/OrderItemTable'
 import './App.css'
-import { fetchOrders, addOrder } from './api/orderApi';
+import { fetchOrders, saveOrder, getClients, getProducts } from './api/orderApi';
 
 function App(){
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [clients, setClients] = useState([]);
   const [isAddOrderMode, setIsAddOrderMode] = useState(false);
   const [isEditOrderMode, setIsEditOrderMode] = useState(false);
   const [selectedOrder, setSelectOrder] = useState(null);
   const [newNotAddedOrderItem, setNewNotAddedOrderItem] = useState(null);
+  const [originalOrder, setOriginalOrder] = useState(null);
 
   // Functions to handle order selection and editing
 
-  function handleEditOrderClick(editedOrder) {
+  function handleEditExistingOrderClick(editedOrder) {
     setIsAddOrderMode(false);
     setIsEditOrderMode(true);
     setSelectOrder(editedOrder);
+    
+    // Deep clone to avoid direct state mutation
+    const clonedOrder = JSON.parse(JSON.stringify(editedOrder));
+    setOriginalOrder(clonedOrder);
   }
 
-  function handleSaveOrderClick(savedOrder) {
+  async function handleSaveExistingOrderClick(changedOrder) {
+    const order = await saveOrder(changedOrder, false);
+
+    const dbOrders = await fetchOrders();
+    setOrders(dbOrders);
+
+    setIsEditOrderMode(false);
+    setIsAddOrderMode(false);
+    setSelectOrder(order);
+
+    clearNewNotAddedOrderItem(setNewNotAddedOrderItem);
+    setOriginalOrder(null);
+  }
+
+  function handleCancelExistingOrderClick() {
     setIsAddOrderMode(false);
     setIsEditOrderMode(false);
-    setSelectOrder(savedOrder);
+
+    // Revert changed order in the orders list
+    const originalOrders = orders.map(o => o.orderId === selectedOrder.orderId ? originalOrder : o);
+    setOrders(originalOrders);
+    setSelectOrder(originalOrder);
+    
+    clearNewNotAddedOrderItem(setNewNotAddedOrderItem);
+    setOriginalOrder(null);
   }
 
-  function handleCancelOrderClick() {
-    setIsAddOrderMode(false);
-    setIsEditOrderMode(false);
-    setSelectOrder(null);
-  }
-
-  function handleUpdateOrder(updatedOrder) {
+  function handelUpdateOrderDataInUi(updatedOrder) {
     const updatedOrders = orders.map(order => {
       if (order.orderId === updatedOrder.orderId) {
         return updatedOrder;
@@ -48,27 +70,20 @@ function App(){
     setIsAddOrderMode(true);
     setIsEditOrderMode(false);
 
-    setSelectOrder({ 
-      orderId: 0, 
-      clientName: '', 
-      orderItems: [] });
-      
-    setNewNotAddedOrderItem({
-      productName: '',
-      quantity: 0,
-      unitPriceOnCreatedDate: 0
-    });
+    clearSelectedOrder(setSelectOrder);
+    clearNewNotAddedOrderItem(setNewNotAddedOrderItem);
   }
 
-  function handleNewOrderSaveClick(newOrderToSave) {
-    const orderToSave = {
-      ...newOrderToSave, orderItems: selectedOrder?.orderItems || []
-    };
+  async function handleNewOrderSaveClick(newOrder) {
+    const order = await saveOrder(newOrder, true);
 
-    addOrder(orderToSave);
+    const dbOrders = await fetchOrders();
+    setOrders(dbOrders);
 
     setIsAddOrderMode(false);
-    setSelectOrder(orderToSave);
+    setSelectOrder(order);
+
+    clearNewNotAddedOrderItem(setNewNotAddedOrderItem);
   }
 
   function handleNewOrderCancelClick() {
@@ -77,11 +92,7 @@ function App(){
   }
 
   function handleSetSelectedOrder(updatedOrder) {
-    const orderToSave = {
-      ...updatedOrder, orderItems: selectedOrder?.orderItems || []
-    };
-
-    setSelectOrder(orderToSave);
+    setSelectOrder(updatedOrder);
   }
 
   // Functions to handle order items change
@@ -99,30 +110,37 @@ function App(){
   }
 
   useEffect(() => {
-    fetchOrders()
-      .then(data => setOrders(data))
-      .catch(error => console.error("Fetch error:", error));
-  }, []);
+    const fetchData = async () => {
+      const dbOrders = await fetchOrders();
+      setOrders(dbOrders);
 
+      const dbProducts = await getProducts();
+      setProducts(dbProducts);
+      const dbClients = await getClients();
+      setClients(dbClients);
+    };
+    fetchData();
+  }, []);
 
   return (
     <>
       <OrderTable 
+      clients={clients}
       orders={orders}
       selectedOrder={selectedOrder}
       isAddOrderMode={isAddOrderMode} 
       isEditOrderMode={isEditOrderMode} 
-      onSelectOrder={handleSetSelectedOrder}
-      onEditOrderClick={handleEditOrderClick}
-      onSaveOrderClick={() => handleSaveOrderClick()}
-      onCancelOrderClick={() => handleCancelOrderClick()}
-      onUpdateOrder={handleUpdateOrder}
+      onSetSelectedOrder={handleSetSelectedOrder}
+      onEditExistingOrderClick={handleEditExistingOrderClick}
+      onSaveExistingOrderClick={handleSaveExistingOrderClick}
+      onCancelExistingOrderClick={handleCancelExistingOrderClick}
       onNewOrderAddClick={handleNewOrderAddClick}
       onNewOrderSaveClick={handleNewOrderSaveClick}
       onNewOrderCancelClick={handleNewOrderCancelClick}
-      updateSelectedOrder={handleSetSelectedOrder}
+      onUpdateOrderDataInUi={handelUpdateOrderDataInUi}
       />
       <OrderItemTable 
+      products={products}
       selectedOrder={selectedOrder}
       isAddOrderMode={isAddOrderMode} 
       isEditOrderMode={isEditOrderMode}
@@ -135,3 +153,21 @@ function App(){
 }
 
 export default App
+
+function clearSelectedOrder(setSelectOrder) {
+  setSelectOrder({
+    orderId: 0,
+    clientId: 0,
+    orderItems: []
+  });
+}
+
+function clearNewNotAddedOrderItem(setNewNotAddedOrderItem) {
+  setNewNotAddedOrderItem({
+    productId: 0,
+    productName: '',
+    quantity: 0,
+    unitPriceOnCreatedDate: 0
+  });
+}
+

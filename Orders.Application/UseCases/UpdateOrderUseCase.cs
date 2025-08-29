@@ -12,7 +12,7 @@ public class UpdateOrderUseCase
         this.orderItemRepository = orderItemRepository;
     }
 
-    public async Task Execute(OrderUpdateDto dto)
+    public async Task<OrderDto> Execute(OrderUpdateDto dto)
     {
         var existingOrder = await orderRepository.GetOrderByIdAsync(dto.OrderId);
         if (existingOrder == null)
@@ -22,25 +22,27 @@ public class UpdateOrderUseCase
         existingOrder.DateModified = DateTime.UtcNow;
 
         var oldItems = existingOrder.OrderItems.ToList();
-        var newItems = dto.Items;
+        var newItems = dto.OrderItems;
 
         foreach (var item in newItems)
         {
-            var existingItem = oldItems.FirstOrDefault(oi => oi.OrderId == item.OrderId && oi.ProductId == item.ProductId);
+            var existingItem = oldItems.FirstOrDefault(oi => oi.OrderItemId == item.OrderItemId);
             if (existingItem != null)
             {
-                // Update quantity if the item exists
+                // Update if the item exists
                 existingItem.Quantity = item.Quantity;
+                existingItem.UnitPriceOnCreatedDate = item.UnitPriceOnCreatedDate;
             }
             else
             {
                 // Add new item if it doesn't exist in the old items
                 var newItem = new OrderItem
                 {
-                    OrderItemId = item.OrderItemId,
+                    OrderItemId = 0,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    OrderId = existingOrder.OrderId
+                    OrderId = existingOrder.OrderId,
+                    UnitPriceOnCreatedDate = item.UnitPriceOnCreatedDate
                 };
                 await orderItemRepository.AddOrderItemAsync(newItem);
             }
@@ -58,5 +60,10 @@ public class UpdateOrderUseCase
 
         await orderItemRepository.SaveChangesAsync();
         await orderRepository.SaveChangesAsync();
+
+        var updatedOrder = await orderRepository.GetOrderByIdAsync(existingOrder.OrderId);
+
+        var orderDto = (OrderDto)updatedOrder;
+        return orderDto;
     }
 }

@@ -27,18 +27,18 @@ namespace Orders.WebApi
             return Ok(result);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(OrderUpdateDto orderUpdate)
+        {
+            var result = await updateOrderUseCase.Execute(orderUpdate);
+            return Ok(result);
+        }
+
         [HttpGet("paged")]
         public async Task<IActionResult> GetOrdersPaged(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
         {
             var result = await getOrdersPagedUseCase.Execute(pageIndex, pageSize, sortColumn, sortDirection, filter);
             return Ok(result);
-        }
-
-        [HttpPut()]
-        public async Task<IActionResult> Update(OrderUpdateDto orderUpdate)
-        {
-            await updateOrderUseCase.Execute(orderUpdate);
-            return Ok();
         }
 
         [HttpDelete]

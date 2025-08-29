@@ -35,6 +35,7 @@ namespace Orders.Infrastructure.Repositories
             return await ordersContext.Orders
                 .Include(o => o.Client)
                 .Include(o => o.OrderItems)
+                    .ThenInclude(o => o.Product)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
         }
 

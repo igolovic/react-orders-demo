@@ -16,24 +16,6 @@ namespace Orders.Application.UseCases
         {
             var orders = await orderQueryService.GetOrdersPaged(pageIndex, pageSize, sortColumn, sortDirection, filter);
             return orders;
-            //.Select(os => new PagedOrderDto
-            // {
-            //     Id = os.Id,
-            //     DateCreated = os.DateCreated,
-            //     DateModified = os.DateModified,
-            //     ClientId = os.ClientId,
-            //     ClientName = os.ClientName,
-            //     OrderItems = os.OrderItems
-            //.Select(oi => new OrderItemDto
-            //{
-            //    OrderItemId = oi.OrderItemId,
-            //    OrderId = oi.OrderId,
-            //    ProductId = oi.ProductId,
-            //    ProductName = oi.ProductName,
-            //    Quantity = oi.Quantity,
-            //    UnitPriceOnCreatedDate = oi.UnitPriceOnCreatedDate
-            //}).ToList()
-            //});
         }
     }
 }
