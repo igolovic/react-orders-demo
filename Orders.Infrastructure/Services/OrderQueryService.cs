@@ -14,10 +14,11 @@ namespace Orders.Infrastructure.OrderQueryService
             this.ordersContext = ordersContext;
         }
 
-        public async Task<IEnumerable<PagedOrderDto>> GetOrdersPaged(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
+        public async Task<PagedOrdersResultDto> GetOrdersPaged(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
         {
             var pagedOrders = new List<PagedOrderDto>();
             var orderItems = new List<OrderItemDto>();
+            int totalCount = 0;
 
             var conn = ordersContext.Database.GetDbConnection();
             await using (conn)
@@ -67,6 +68,15 @@ namespace Orders.Infrastructure.OrderQueryService
                         });
                     }
                 }
+
+                // 3rd result set: TotalCount
+                if (await reader.NextResultAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        totalCount = reader.GetInt32(reader.GetOrdinal("TotalCount"));
+                    }
+                }
             }
 
             // Map order items to their orders
@@ -79,7 +89,11 @@ namespace Orders.Infrastructure.OrderQueryService
                 }
             }
 
-            return pagedOrders;
+            return new PagedOrdersResultDto
+            {
+                TotalCount = totalCount,
+                PagedOrders = pagedOrders
+            };
         }
     }
 }

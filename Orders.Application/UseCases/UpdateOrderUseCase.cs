@@ -30,6 +30,7 @@ public class UpdateOrderUseCase
             if (existingItem != null)
             {
                 // Update if the item exists
+                existingItem.ProductId = item.ProductId;
                 existingItem.Quantity = item.Quantity;
                 existingItem.UnitPriceOnCreatedDate = item.UnitPriceOnCreatedDate;
             }
@@ -49,7 +50,7 @@ public class UpdateOrderUseCase
         }
 
         // Remove old items that are not in the new items list
-        var itemsToRemove = oldItems.Where(oi => !newItems.Any(ni => ni.OrderId == oi.OrderId && ni.ProductId == oi.ProductId));
+        var itemsToRemove = oldItems.Where(oi => !newItems.Any(ni => ni.OrderItemId == oi.OrderItemId));
 
         foreach (var item in itemsToRemove)
         {

@@ -12,10 +12,10 @@ namespace Orders.Application.UseCases
             this.orderQueryService = orderQueryService;
         }
 
-        public async Task<IEnumerable<PagedOrderDto>> Execute(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
+        public async Task<PagedOrdersResultDto> Execute(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
         {
-            var orders = await orderQueryService.GetOrdersPaged(pageIndex, pageSize, sortColumn, sortDirection, filter);
-            return orders;
+            var ordersPagedResult = await orderQueryService.GetOrdersPaged(pageIndex, pageSize, sortColumn, sortDirection, filter);
+            return ordersPagedResult;
         }
     }
 }

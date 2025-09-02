@@ -1,9 +1,9 @@
-export async function fetchOrders() {
-  const pageIndex = 0;
-  const pageSize = 10;
+import { PAGE_SIZE } from "../constants";
+
+export async function fetchOrders(filter, pageIndex) {
+  const pageSize = PAGE_SIZE;
   const sortColumn = "DateCreated";
   const sortDirection = "DESC";
-  const filter = "";
   const baseUrl = "http://localhost:5248/api/orders/paged";
 
   const params = new URLSearchParams({

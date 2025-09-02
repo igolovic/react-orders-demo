@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import OrderTable from './OrderControls/OrderTable'
 import OrderItemTable from './OrderItemControls/OrderItemTable'
 import './App.css'
-import { fetchOrders, saveOrder, getClients, getProducts, deleteOrder } from './api/orderApi';
+import { fetchOrders, saveOrder, getClients, getProducts, deleteOrder } from './api/orderApi'
 
 function App(){
   const [orders, setOrders] = useState([]);
@@ -13,8 +13,12 @@ function App(){
   const [selectedOrder, setSelectOrder] = useState(null);
   const [newNotAddedOrderItem, setNewNotAddedOrderItem] = useState(null);
   const [originalOrder, setOriginalOrder] = useState(null);
-
+  const [nameFilterText, onSetNameFilterText] = useState('');
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  //////////////////////////////////////////////////
   // Functions to handle order selection and editing
+  //////////////////////////////////////////////////
 
   function handleEditExistingOrderClick(editedOrder) {
     setIsAddOrderMode(false);
@@ -29,8 +33,9 @@ function App(){
   async function handleSaveExistingOrderClick(changedOrder) {
     const order = await saveOrder(changedOrder, false);
 
-    const dbOrders = await fetchOrders();
-    setOrders(dbOrders);
+    const result = await fetchOrders(nameFilterText, currentPage);
+    setOrders(result.pagedOrders);
+    setTotalCount(result.totalCount);
 
     setIsEditOrderMode(false);
     setIsAddOrderMode(false);
@@ -66,12 +71,17 @@ function App(){
 
   async function handleDeleteExistingOrderClick(orderToDelete) {
     await deleteOrder(orderToDelete.orderId);
-    const dbOrders = await fetchOrders();
-    setOrders(dbOrders);
+    
+    const result = await fetchOrders(nameFilterText, 0);
+    setOrders(result.pagedOrders);
+    setTotalCount(result.totalCount);
+
     setSelectOrder(null);
   }
 
+  ////////////////////////////////
   // Functions to handle new order
+  ////////////////////////////////
 
   function handleNewOrderAddClick() {
     setIsAddOrderMode(true);
@@ -84,8 +94,9 @@ function App(){
   async function handleNewOrderSaveClick(newOrder) {
     const order = await saveOrder(newOrder, true);
 
-    const dbOrders = await fetchOrders();
-    setOrders(dbOrders);
+    const result = await fetchOrders(nameFilterText,	currentPage);
+    setOrders(result.pagedOrders);
+    setTotalCount(result.totalCount);
 
     setIsAddOrderMode(false);
     setSelectOrder(order);
@@ -101,8 +112,19 @@ function App(){
   function handleSetSelectedOrder(updatedOrder) {
     setSelectOrder(updatedOrder);
   }
+ 
+  async function handlePageClick(selectedItem) {
+    const selectedPage = selectedItem.selected;
+    setCurrentPage(selectedPage);
 
+    const result = await fetchOrders(nameFilterText, selectedPage);
+    setOrders(result.pagedOrders);
+    setTotalCount(result.totalCount);
+  }
+
+  /////////////////////////////////////////
   // Functions to handle order items change
+  /////////////////////////////////////////
 
   // This function is called when order items are added/updated/deleted
   function handleOrderItemsChange(orderWithUpdatedItems) {
@@ -118,8 +140,9 @@ function App(){
 
   useEffect(() => {
     const fetchData = async () => {
-      const dbOrders = await fetchOrders();
-      setOrders(dbOrders);
+      const result = await fetchOrders(nameFilterText, currentPage);
+      setOrders(result.pagedOrders);
+      setTotalCount(result.totalCount);
 
       const dbProducts = await getProducts();
       setProducts(dbProducts);
@@ -127,7 +150,7 @@ function App(){
       setClients(dbClients);
     };
     fetchData();
-  }, []);
+  }, [nameFilterText, currentPage]);
 
   return (
     <>
@@ -135,6 +158,7 @@ function App(){
       clients={clients}
       orders={orders}
       selectedOrder={selectedOrder}
+      totalCount={totalCount}
       isAddOrderMode={isAddOrderMode} 
       isEditOrderMode={isEditOrderMode} 
       onSetSelectedOrder={handleSetSelectedOrder}
@@ -146,6 +170,9 @@ function App(){
       onNewOrderCancelClick={handleNewOrderCancelClick}
       onUpdateOrderDataInUi={handelUpdateOrderDataInUi}
       onDeleteExistingOrderClick={handleDeleteExistingOrderClick}
+      nameFilterText={nameFilterText}
+      onSetNameFilterText={onSetNameFilterText}
+      onPageClick={handlePageClick}
       />
       <OrderItemTable 
       products={products}

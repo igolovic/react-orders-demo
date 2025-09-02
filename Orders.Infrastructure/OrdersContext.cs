@@ -20,8 +20,20 @@ public class OrdersContext : DbContext
             .HasMany(o => o.OrderItems)
             .WithOne(oi => oi.Order)
             .HasForeignKey(oi => oi.OrderId);
+
         modelBuilder.Entity<OrderItem>()
-            .HasKey(oi => new { oi.OrderId, oi.ProductId });
+            .HasOne(oi => oi.Product)
+            .WithMany()
+            .HasForeignKey(oi => oi.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.UnitPriceOnCreatedDate)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<Product>()
+            .Property(p => p.UnitPrice)
+            .HasColumnType("decimal(18,2)");
 
         base.OnModelCreating(modelBuilder);
     }
