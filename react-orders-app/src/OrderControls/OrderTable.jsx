@@ -9,7 +9,8 @@ function OrderTable({clients, orders, selectedOrder, totalCount, isAddOrderMode,
 
   return (
     <>
-    <table>
+    <h4>Orders</h4>
+    <table className="table">
       <OrderHeader />
       <tbody>
         <OrderFilter
@@ -52,8 +53,16 @@ function OrderTable({clients, orders, selectedOrder, totalCount, isAddOrderMode,
                 marginPagesDisplayed={2}
                 pageRangeDisplayed={5}
                 onPageChange={onPageClick}
-                containerClassName={"pagination"}
-                activeClassName={"active"}
+                containerClassName="pagination"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                activeClassName="active"
               />
             </td>
           </tr>

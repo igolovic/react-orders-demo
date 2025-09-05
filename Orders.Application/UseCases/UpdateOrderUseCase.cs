@@ -24,19 +24,31 @@ public class UpdateOrderUseCase
         var oldItems = existingOrder.OrderItems.ToList();
         var newItems = dto.OrderItems;
 
+        // 1. Update existing items
         foreach (var item in newItems)
         {
             var existingItem = oldItems.FirstOrDefault(oi => oi.OrderItemId == item.OrderItemId);
             if (existingItem != null)
             {
-                // Update if the item exists
                 existingItem.ProductId = item.ProductId;
                 existingItem.Quantity = item.Quantity;
                 existingItem.UnitPriceOnCreatedDate = item.UnitPriceOnCreatedDate;
             }
-            else
+        }
+
+        // 2. Delete removed items
+        var itemsToRemove = oldItems.Where(oi => !newItems.Any(ni => ni.OrderItemId == oi.OrderItemId));
+        foreach (var item in itemsToRemove)
+        {
+            await orderItemRepository.DeleteOrderItemAsync(item.OrderId, item.ProductId);
+        }
+
+        // 3. Insert new items
+        foreach (var item in newItems)
+        {
+            var existingItem = oldItems.FirstOrDefault(oi => oi.OrderItemId == item.OrderItemId);
+            if (existingItem == null)
             {
-                // Add new item if it doesn't exist in the old items
                 var newItem = new OrderItem
                 {
                     OrderItemId = 0,
@@ -49,14 +61,7 @@ public class UpdateOrderUseCase
             }
         }
 
-        // Remove old items that are not in the new items list
-        var itemsToRemove = oldItems.Where(oi => !newItems.Any(ni => ni.OrderItemId == oi.OrderItemId));
-
-        foreach (var item in itemsToRemove)
-        {
-            await orderItemRepository.DeleteOrderItemAsync(item.OrderId, item.ProductId);
-        }
-
+        // 4. Update the order
         orderRepository.UpdateOrderAsync(existingOrder);
 
         await orderItemRepository.SaveChangesAsync();

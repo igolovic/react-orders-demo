@@ -19,7 +19,7 @@ function OrderItemRow({products, orderItem, isAddOrderMode, isEditOrderMode, onU
         </td>
         <td>{areControlsEditable ? <input type="number" value={orderItem.quantity} onChange={e => onUpdateOrderItem({...orderItem, quantity: e.target.value}, orderItem.productId, false)} /> : orderItem.quantity}</td>
         <td>{areControlsEditable ? <input type="number" value={orderItem.unitPriceOnCreatedDate} onChange={e => onUpdateOrderItem({...orderItem, unitPriceOnCreatedDate: e.target.value}, orderItem.productId, false)} /> : orderItem.unitPriceOnCreatedDate}</td>
-        <td><button onClick={() => onDeleteOrderItemClick(orderItem)} disabled={!areControlsEditable}>Delete</button></td>
+        <td><button className="btn-sm btn btn-danger" onClick={() => onDeleteOrderItemClick(orderItem)} disabled={!areControlsEditable}>Delete</button></td>
       </tr>
     </>
   )

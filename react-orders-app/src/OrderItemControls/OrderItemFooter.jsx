@@ -28,7 +28,7 @@ function OrderItemFooter({products, isAddOrderMode, isEditOrderMode, newNotAdded
           onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, unitPriceOnCreatedDate: e.target.value})} />
         </td>
         <td>
-          <button 
+          <button className="btn-sm btn btn-primary"
           disabled={!isNewOrderBeingEdited}
           onClick={() => onAddNewOrderItemClick(newNotAddedOrderItem)}>Add order item</button>
         </td>

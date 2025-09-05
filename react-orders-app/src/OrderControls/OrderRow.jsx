@@ -30,19 +30,19 @@ function OrderRow({clients, order, selectedOrder, isAddOrderMode, isEditOrderMod
       <td>
         {!isRowBeingEdited
           &&
-          <button onClick={() => onEditExistingOrderClick(order)} disabled={!isEditButtonEnabled}>Edit</button>
+          <button className="btn-sm btn btn-primary" onClick={() => onEditExistingOrderClick(order)} disabled={!isEditButtonEnabled}>Edit</button>
         }
         {isRowBeingEdited
           &&
-          <button onClick={() => onSaveExistingOrderClick(order)}>Save</button>
+          <button className="btn-sm btn btn-success" onClick={() => onSaveExistingOrderClick(order)}>Save</button>
         }
         {isRowBeingEdited
           &&
-          <button onClick={() => onCancelExistingOrderClick()}>Cancel</button>
+          <button className="btn-sm btn btn-secondary" onClick={() => onCancelExistingOrderClick()}>Cancel</button>
         }
         {!isRowBeingEdited
           &&
-          <button onClick={() => onDeleteExistingOrderClick(order)} disabled={!isEditButtonEnabled}>Delete</button>
+          <button className="btn-sm btn btn-secondary" onClick={() => onDeleteExistingOrderClick(order)} disabled={!isEditButtonEnabled}>Delete</button>
         }
       </td>
     </tr>

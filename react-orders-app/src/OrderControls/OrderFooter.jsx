@@ -21,15 +21,15 @@ function OrderFooter({clients, isAddOrderMode, selectedOrder, onUpdateOrderDataI
         <td>
           {!isNewOrderBeingEdited
             &&
-            <button onClick={onNewOrderAddClick} disabled={isEditOrderMode}>Add Order</button>
+            <button className="btn-sm btn btn-primary"onClick={onNewOrderAddClick} disabled={isEditOrderMode}>Add Order</button>
           }
           {isNewOrderBeingEdited
             &&
-            <button onClick={() => onNewOrderSaveClick(selectedOrder)} disabled={isEditOrderMode}>Save new order</button>
+            <button className="btn-sm btn btn-primary" onClick={() => onNewOrderSaveClick(selectedOrder)} disabled={isEditOrderMode}>Save new order</button>
           }
           {isNewOrderBeingEdited
             &&
-            <button onClick={onNewOrderCancelClick}>Cancel</button>
+            <button className="btn-sm btn btn-secondary" onClick={onNewOrderCancelClick}>Cancel</button>
           }
         </td>
       </tr>

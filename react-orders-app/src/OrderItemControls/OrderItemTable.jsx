@@ -59,8 +59,8 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
 
   return (
     <>
-      <h2>Order Items</h2>
-      <table>
+      <h4>Order Items</h4>
+      <table className="table">
         <OrderItemHeader />
         <tbody>
           {selectedOrder && selectedOrder.orderItems.map(orderItem => {
