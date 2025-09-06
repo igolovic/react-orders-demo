@@ -40,7 +40,7 @@ public class UpdateOrderUseCase
         var itemsToRemove = oldItems.Where(oi => !newItems.Any(ni => ni.OrderItemId == oi.OrderItemId));
         foreach (var item in itemsToRemove)
         {
-            await orderItemRepository.DeleteOrderItemAsync(item.OrderId, item.ProductId);
+            await orderItemRepository.DeleteOrderItemAsync(item.OrderItemId);
         }
 
         // 3. Insert new items
@@ -64,7 +64,6 @@ public class UpdateOrderUseCase
         // 4. Update the order
         orderRepository.UpdateOrderAsync(existingOrder);
 
-        await orderItemRepository.SaveChangesAsync();
         await orderRepository.SaveChangesAsync();
 
         var updatedOrder = await orderRepository.GetOrderByIdAsync(existingOrder.OrderId);

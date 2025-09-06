@@ -20,11 +20,6 @@ builder.Services.AddScoped<GetProductsUseCase>();
 
 builder.Services.AddScoped<GetClientsUseCase>();
 
-builder.Services.AddScoped<GetOrderItemsUseCase>();
-builder.Services.AddScoped<AddOrderItemUseCase>();
-builder.Services.AddScoped<UpdateOrderItemUseCase>();
-builder.Services.AddScoped<DeleteOrderItemUseCase>();
-
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();

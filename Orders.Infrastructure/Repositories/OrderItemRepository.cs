@@ -18,9 +18,9 @@ namespace Orders.Infrastructure.Repositories
             await ordersContext.OrderItems.AddAsync(orderItem);
         }
 
-        public async Task DeleteOrderItemAsync(int orderId, int productId)
+        public async Task DeleteOrderItemAsync(int orderItemId)
         {
-            var orderItem = await ordersContext.OrderItems.FindAsync(orderId, productId);
+            var orderItem = await ordersContext.OrderItems.FindAsync(orderItemId);
             if (orderItem != null)
             {
                 ordersContext.OrderItems.Remove(orderItem);

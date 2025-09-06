@@ -1,17 +1,12 @@
 import OrderItemHeader from "./OrderItemHeader"
 import OrderItemRow from "./OrderItemRow"
 import OrderItemFooter from "./OrderItemFooter"
+import { isDuplicateProductInOrderItems } from '../validation.js'
 
 function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNewNotAddedOrderItem, isAddOrderMode, isEditOrderMode, onOrderItemsChange}){
 
-  function isDuplicateProduct(orderItems, productId) {
-    return orderItems.some(item =>
-      item.productId === productId
-    );
-  }
-  
   function handleUpdateOrderItem(updatedOrderItem, oldProductId, checkDuplicateProductInOrderItems) {
-    if (checkDuplicateProductInOrderItems && isDuplicateProduct(selectedOrder.orderItems, updatedOrderItem.productId)) {
+    if (checkDuplicateProductInOrderItems && isDuplicateProductInOrderItems(selectedOrder.orderItems, updatedOrderItem.productId)) {
       alert("Order item with this product ID already exists.");
       return;
     }
@@ -26,13 +21,13 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
 
   function handleDeleteOrderItemClick(deletedOrderItem) {
     selectedOrder.orderItems = selectedOrder.orderItems.filter(
-      oi => GetOrderItemIdentifierFromProductAndOrderId(oi) !== GetOrderItemIdentifierFromProductAndOrderId(deletedOrderItem)
+      oi => CreateTemporaryIdForUnsavedOrderItem(oi) !== CreateTemporaryIdForUnsavedOrderItem(deletedOrderItem)
     );
     onOrderItemsChange(selectedOrder);
   }
 
   function handleAddOrderItemClick(addedOrderItem) {
-    if (isDuplicateProduct(selectedOrder.orderItems, addedOrderItem.productId)) {
+    if (isDuplicateProductInOrderItems(selectedOrder.orderItems, addedOrderItem.productId)) {
       alert("Order item with this product ID already exists.");
       return;
     }
@@ -68,7 +63,7 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
             // This is a workaround for React's key requirement in lists
             const tempKey = orderItem.orderItemId
               ? orderItem.orderItemId
-              : GetOrderItemIdentifierFromProductAndOrderId(orderItem);
+              : CreateTemporaryIdForUnsavedOrderItem(orderItem);
             return (
               <OrderItemRow
                 key={tempKey}
@@ -97,6 +92,6 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
 
 export default OrderItemTable
 
-function GetOrderItemIdentifierFromProductAndOrderId(oi) {
+function CreateTemporaryIdForUnsavedOrderItem(oi) {
   return `${oi.productId}_${oi.orderId}`;
 }

@@ -46,21 +46,3 @@ export async function deleteOrder(orderId){
   });
   if (!response.ok) throw new Error("Network response was not ok");
 }
-
-export async function getClients(){
-  const response = await fetch("http://localhost:5248/api/clients", {
-    method: "GET",
-    headers: { "Accept": "application/json" }
-  });
-  if (!response.ok) throw new Error("Network response was not ok");
-  return response.json();
-}
-
-export async function getProducts(){
-  const response = await fetch("http://localhost:5248/api/products", {
-    method: "GET",
-    headers: { "Accept": "application/json" }
-  });
-  if(!response.ok) throw new Error("Network response was not ok");
-  return response.json();
-}

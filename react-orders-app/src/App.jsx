@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import OrderTable from './OrderControls/OrderTable'
 import OrderItemTable from './OrderItemControls/OrderItemTable'
+import { getClients } from './api/clients.js'
+import { fetchOrders, saveOrder, deleteOrder } from './api/orders.js'
+import { getProducts } from './api/products.js'
+import { validateOrder } from './validation.js'
 import './App.css'
-import { fetchOrders, saveOrder, getClients, getProducts, deleteOrder } from './api/orderApi'
 
 function App(){
   const [orders, setOrders] = useState([]);
@@ -16,6 +19,7 @@ function App(){
   const [nameFilterText, onSetNameFilterText] = useState('');
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+
   //////////////////////////////////////////////////
   // Functions to handle order selection and editing
   //////////////////////////////////////////////////
@@ -31,6 +35,13 @@ function App(){
   }
 
   async function handleSaveExistingOrderClick(changedOrder) {
+    const { valid, errors } = validateOrder(changedOrder);
+    const errorMessage = getErrorMessage(errors);
+    if (!valid) {
+      alert(errorMessage);
+      return;
+    }
+
     const order = await saveOrder(changedOrder, false);
 
     const result = await fetchOrders(nameFilterText, currentPage);
@@ -39,7 +50,14 @@ function App(){
 
     setIsEditOrderMode(false);
     setIsAddOrderMode(false);
-    setSelectOrder(order);
+
+    const selectedOrderIsInResult = result.pagedOrders.find(po => po.orderId === order.orderId);
+    if(selectedOrderIsInResult) {
+        setSelectOrder(order);
+    }
+    else {
+        setSelectOrder(null);
+    }
 
     clearNewNotAddedOrderItem(setNewNotAddedOrderItem);
     setOriginalOrder(null);
@@ -92,6 +110,13 @@ function App(){
   }
 
   async function handleNewOrderSaveClick(newOrder) {
+    const { valid, errors } = validateOrder(newOrder);
+    const errorMessage = getErrorMessage(errors);
+    if (!valid) {
+      alert(errorMessage);
+      return;
+    }
+
     const order = await saveOrder(newOrder, true);
 
     const result = await fetchOrders(nameFilterText,	currentPage);
@@ -99,7 +124,14 @@ function App(){
     setTotalCount(result.totalCount);
 
     setIsAddOrderMode(false);
-    setSelectOrder(order);
+    
+    const selectedOrderIsInResult = result.pagedOrders.find(po => po.orderId === order.orderId);
+    if(selectedOrderIsInResult) {
+        setSelectOrder(order);
+    }
+    else {
+        setSelectOrder(null);
+    }
 
     clearNewNotAddedOrderItem(setNewNotAddedOrderItem);
   }
@@ -138,10 +170,48 @@ function App(){
     setSelectOrder(orderWithUpdatedItems);
   }
 
+  ////////////////////////////
+  // Helper functions
+    ////////////////////////////
+
+  function getErrorMessage(errors) {
+    let errorStrings = [];
+    if (errors.clientId) errorStrings.push(`- Client: ${errors.clientId}`);
+    if (errors.orderItems) {
+      if (typeof errors.orderItems === "string") {
+        errorStrings.push(`- Items: ${errors.orderItems}\n`);
+      } else {
+        errors.orderItems.forEach((itemErr, idx) => {
+          if (itemErr) {
+            errorStrings.push(`- Item ${idx + 1}:\n`);
+            if (itemErr.productId) errorStrings.push(` - Product: ${itemErr.productId}\n`);
+            if (itemErr.quantity) errorStrings.push(` - Quantity: ${itemErr.quantity}\n`);
+            if (itemErr.unitPriceOnCreatedDate) errorStrings.push(` - Price: ${itemErr.unitPriceOnCreatedDate}\n`);
+          }
+        });
+      }
+    }
+    return errorStrings.join("\n");
+  }
+
+
+  ////////////////////////////
+  // Fetch data initially and on filter/page change
+  ////////////////////////////
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await fetchOrders(nameFilterText, currentPage);
       setOrders(result.pagedOrders);
+
+      if (selectedOrder !== null) {
+        // If selected order was deleted or is not in the current page, clear selection
+        const selectedOrderIsInResult = result.pagedOrders.find(po => po.orderId === selectedOrder.orderId);
+        if(!selectedOrderIsInResult) {
+            setSelectOrder(null);
+        }
+      }
+      
       setTotalCount(result.totalCount);
 
       const dbProducts = await getProducts();
@@ -150,7 +220,7 @@ function App(){
       setClients(dbClients);
     };
     fetchData();
-  }, [nameFilterText, currentPage]);
+  }, [nameFilterText, currentPage, selectedOrder]);
 
   return (
     <>
