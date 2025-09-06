@@ -38,7 +38,7 @@ export function validateOrder(order) {
 // Checks if a product is already in the order items (prevents duplicates)
 export function isDuplicateProductInOrderItems(orderItems, productId) {
   return orderItems.some(item =>
-    // OnChange returns e.target.value as string, so convert to number for comparison
+    // onChange returns e.target.value as string, so convert to number for comparison
     item.productId === Number(productId)
   );
 }

@@ -1,4 +1,5 @@
-export async function getProducts(){
+// Gets a list of all products from the API
+export async function getProducts() {
   const response = await fetch("http://localhost:5248/api/products", {
     method: "GET",
     headers: { "Accept": "application/json" }
