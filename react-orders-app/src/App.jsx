@@ -205,9 +205,9 @@ function App(){
       setOrders(result.pagedOrders);
 
       if (selectedOrder !== null) {
-        // If selected order was deleted or is not in the current page, clear selection
+        // If selected order was deleted or is not in the current page, and we are not adding new order, clear selection
         const selectedOrderIsInResult = result.pagedOrders.find(po => po.orderId === selectedOrder.orderId);
-        if(!selectedOrderIsInResult) {
+        if(!selectedOrderIsInResult && !isAddOrderMode) {
             setSelectOrder(null);
         }
       }

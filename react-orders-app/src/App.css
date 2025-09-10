@@ -48,3 +48,7 @@ button {
 td label{
   cursor: pointer;
 }
+
+.selected-row {
+  background-color: #e0e0e0 !important;
+}

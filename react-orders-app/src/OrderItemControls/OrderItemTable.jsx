@@ -27,6 +27,14 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
   }
 
   function handleAddOrderItemClick(addedOrderItem) {
+    if (addedOrderItem.productId === null || addedOrderItem.productId === 0) {
+      alert("Please select product.");
+      return;
+    }
+    if (addedOrderItem.quantity === null || addedOrderItem.quantity === 0) {
+      alert("Please set quantity.");
+      return;
+    }
     if (isDuplicateProductInOrderItems(selectedOrder.orderItems, addedOrderItem.productId)) {
       alert("Order item with this product ID already exists.");
       return;
