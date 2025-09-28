@@ -1,4 +1,3 @@
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Orders.Application.DTOs;
 using Orders.Application.Services;
@@ -14,85 +13,72 @@ namespace Orders.Infrastructure.OrderQueryService
             this.ordersContext = ordersContext;
         }
 
-        public async Task<PagedOrdersResultDto> GetOrdersPaged(int pageIndex, int pageSize, string sortColumn, string sortDirection, string? filter = null)
+        public async Task<PagedOrdersResultDto> GetOrdersPaged(
+            int pageIndex,
+            int pageSize,
+            string sortColumn,
+            string sortDirection,
+            string? filter = null)
         {
-            var pagedOrders = new List<PagedOrderDto>();
-            var orderItems = new List<OrderItemDto>();
-            int totalCount = 0;
+            // Base query: join Orders, Clients, and OrderItems, with optional filter
+            var query = ordersContext.Orders
+                .Include(o => o.Client)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .AsQueryable();
 
-            var conn = ordersContext.Database.GetDbConnection();
-            await using (conn)
+            if (!string.IsNullOrWhiteSpace(filter))
             {
-                await conn.OpenAsync();
-
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "sp_GetOrdersPaged";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.Add(new SqlParameter("@PageIndex", pageIndex));
-                cmd.Parameters.Add(new SqlParameter("@PageSize", pageSize));
-                cmd.Parameters.Add(new SqlParameter("@SortColumn", sortColumn));
-                cmd.Parameters.Add(new SqlParameter("@SortDirection", sortDirection));
-                cmd.Parameters.Add(new SqlParameter("@Filter", (object?)filter ?? DBNull.Value));
-
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                // 1st result set: Orders
-                while (await reader.ReadAsync())
-                {
-                    pagedOrders.Add(new PagedOrderDto
-                    {
-                        OrderId = reader.GetInt32(reader.GetOrdinal(nameof(PagedOrderDto.OrderId))),
-                        DateCreated = reader.IsDBNull(reader.GetOrdinal(nameof(PagedOrderDto.DateCreated))) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal(nameof(PagedOrderDto.DateCreated))),
-                        DateModified = reader.IsDBNull(reader.GetOrdinal(nameof(PagedOrderDto.DateModified)))
-                        ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal(nameof(PagedOrderDto.DateModified))),
-                        ClientId = reader.GetInt32(reader.GetOrdinal(nameof(PagedOrderDto.ClientId))),
-                        ClientName = reader.GetString(reader.GetOrdinal(nameof(PagedOrderDto.ClientName))),
-                        OrderItems = new List<OrderItemDto>()
-                    });
-                }
-
-                // 2nd result set: OrderItems
-                if (await reader.NextResultAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        orderItems.Add(new OrderItemDto
-                        {
-                            OrderItemId = reader.GetInt32(reader.GetOrdinal(nameof(OrderItemDto.OrderItemId))),
-                            OrderId = reader.GetInt32(reader.GetOrdinal(nameof(OrderItemDto.OrderId))),
-                            ProductId = reader.GetInt32(reader.GetOrdinal(nameof(OrderItemDto.ProductId))),
-                            ProductName = reader.GetString(reader.GetOrdinal(nameof(OrderItemDto.ProductName))),
-                            Quantity = reader.GetInt32(reader.GetOrdinal(nameof(OrderItemDto.Quantity))),
-                            UnitPriceOnCreatedDate = reader.GetDecimal(reader.GetOrdinal(nameof(OrderItemDto.UnitPriceOnCreatedDate)))
-                        });
-                    }
-                }
-
-                // 3rd result set: TotalCount
-                if (await reader.NextResultAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        totalCount = reader.GetInt32(reader.GetOrdinal("TotalCount"));
-                    }
-                }
+                query = query.Where(o =>
+                    o.Client != null && o.Client.Name.Contains(filter));
             }
 
-            // Map order items to their orders
-            var orderDict = pagedOrders.ToDictionary(o => o.OrderId);
-            foreach (var orderItem in orderItems)
+            // Sorting
+            // Default sort: DateCreated descending
+            bool descending = sortDirection?.ToLower() == "desc";
+            query = sortColumn?.ToLower() switch
             {
-                if (orderDict.TryGetValue(orderItem.OrderId, out var pagedOrder))
+                "clientname" => descending
+                    ? query.OrderByDescending(o => o.Client.Name)
+                    : query.OrderBy(o => o.Client.Name),
+                "datecreated" => descending
+                    ? query.OrderByDescending(o => o.DateCreated)
+                    : query.OrderBy(o => o.DateCreated),
+                _ => query.OrderByDescending(o => o.DateCreated)
+            };
+
+            // Total count before paging
+            int totalCount = await query.CountAsync();
+
+            // Paging
+            var pagedOrders = await query
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Map to DTOs
+            var pagedOrderDtos = pagedOrders.Select(o => new PagedOrderDto
+            {
+                OrderId = o.OrderId,
+                DateCreated = o.DateCreated,
+                DateModified = o.DateModified,
+                ClientId = o.ClientId,
+                ClientName = o.Client?.Name,
+                OrderItems = o.OrderItems.Select(oi => new OrderItemDto
                 {
-                    pagedOrder.OrderItems.Add(orderItem);
-                }
-            }
+                    OrderItemId = oi.OrderItemId,
+                    OrderId = oi.OrderId,
+                    ProductId = oi.ProductId,
+                    ProductName = oi.Product?.Name,
+                    Quantity = oi.Quantity,
+                    UnitPrice = oi.Product?.UnitPrice ?? 0m
+                }).ToList()
+            }).ToList();
 
             return new PagedOrdersResultDto
             {
                 TotalCount = totalCount,
-                PagedOrders = pagedOrders
+                PagedOrders = pagedOrderDtos
             };
         }
     }

@@ -55,8 +55,8 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
       orderId: null,
       productId: null,
       productName: '',
+      unitPrice: 0,
       quantity: 0,
-      unitPriceOnCreatedDate: 0
     });
   }
 

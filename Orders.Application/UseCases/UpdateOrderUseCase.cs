@@ -32,7 +32,6 @@ public class UpdateOrderUseCase
             {
                 existingItem.ProductId = item.ProductId;
                 existingItem.Quantity = item.Quantity;
-                existingItem.UnitPriceOnCreatedDate = item.UnitPriceOnCreatedDate;
             }
         }
 
@@ -55,7 +54,6 @@ public class UpdateOrderUseCase
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
                     OrderId = existingOrder.OrderId,
-                    UnitPriceOnCreatedDate = item.UnitPriceOnCreatedDate
                 };
                 await orderItemRepository.AddOrderItemAsync(newItem);
             }

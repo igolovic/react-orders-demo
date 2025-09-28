@@ -186,7 +186,6 @@ function App(){
             errorStrings.push(`- Item ${idx + 1}:\n`);
             if (itemErr.productId) errorStrings.push(` - Product: ${itemErr.productId}\n`);
             if (itemErr.quantity) errorStrings.push(` - Quantity: ${itemErr.quantity}\n`);
-            if (itemErr.unitPriceOnCreatedDate) errorStrings.push(` - Price: ${itemErr.unitPriceOnCreatedDate}\n`);
           }
         });
       }
@@ -272,7 +271,7 @@ function clearNewNotAddedOrderItem(setNewNotAddedOrderItem) {
     productId: 0,
     productName: '',
     quantity: 0,
-    unitPriceOnCreatedDate: 0
+    unitPrice: 0
   });
 }
 

@@ -21,7 +21,6 @@ public class AddOrderUseCase
                 OrderItemId = oi.OrderItemId,
                 ProductId = oi.ProductId,
                 Quantity = oi.Quantity,
-                UnitPriceOnCreatedDate = oi.UnitPriceOnCreatedDate,
                 OrderId = 0, // Temporary value, will be set by the repository
             }).ToList()
         };

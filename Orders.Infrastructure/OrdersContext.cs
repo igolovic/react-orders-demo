@@ -27,13 +27,19 @@ public class OrdersContext : DbContext
             .HasForeignKey(oi => oi.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<OrderItem>()
-            .Property(oi => oi.UnitPriceOnCreatedDate)
-            .HasColumnType("decimal(18,2)");
-
         modelBuilder.Entity<Product>()
             .Property(p => p.UnitPrice)
             .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Name)
+            .HasColumnType("nvarchar(255)");
+
+        modelBuilder.Entity<Client>()
+            .Property(p => p.Name)
+            .HasColumnType("nvarchar(255)");
+
+        OrdersContextSeed.SeedData(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
     }

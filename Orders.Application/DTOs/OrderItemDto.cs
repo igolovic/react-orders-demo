@@ -7,7 +7,7 @@ public class OrderItemDto
     public int ProductId { get; set; }
     public string? ProductName { get; set; }
     public int Quantity { get; set; }
-    public decimal UnitPriceOnCreatedDate { get; set; }
+    public decimal UnitPrice { get; set; }
 
     public static explicit operator OrderItemDto(OrderItem item)
     {
@@ -19,7 +19,7 @@ public class OrderItemDto
             ProductId = item.ProductId,
             ProductName = item.Product?.Name,
             Quantity = item.Quantity,
-            UnitPriceOnCreatedDate = item.UnitPriceOnCreatedDate
+            UnitPrice = item.Product?.UnitPrice ?? 0m
         };
     }
 }

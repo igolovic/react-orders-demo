@@ -34,15 +34,15 @@ function OrderItemRow({products, orderItem, isAddOrderMode, isEditOrderMode, onU
         </td>
         <td>
           {areControlsEditable 
-          ? <input type="number" min={0} value={orderItem.unitPriceOnCreatedDate} 
+          ? <input type="number" disabled min={0} value={orderItem.unitPrice} 
               onChange={e => {
                 const value = e.target.value;
                 if(isValidNumberOrEmpty(value)) {
-                  onUpdateOrderItem({...orderItem, unitPriceOnCreatedDate: e.target.value}, orderItem.productId, false);
+                  onUpdateOrderItem({...orderItem, unitPrice: e.target.value}, orderItem.productId, false);
                 }
               }} /> 
               : 
-              orderItem.unitPriceOnCreatedDate
+              orderItem.unitPrice
               }
         </td>
         <td><button className="btn-sm btn btn-danger" onClick={() => onDeleteOrderItemClick(orderItem)} disabled={!areControlsEditable}>Delete</button></td>

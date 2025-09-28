@@ -21,9 +21,6 @@ export function validateOrder(order) {
       if (!item.quantity || item.quantity <= 0) {
         itemErrors.quantity = "Invalid quantity";
       }
-      if (!item.unitPriceOnCreatedDate || item.unitPriceOnCreatedDate <= 0) {
-        itemErrors.unitPriceOnCreatedDate = "Invalid price";
-      }
       if (Object.keys(itemErrors).length > 0) {
         errors.orderItems[idx] = itemErrors;
       }
