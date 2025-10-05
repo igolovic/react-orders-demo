@@ -25,12 +25,12 @@ function OrderTable({clients, orders, selectedOrder, totalCount, isAddOrderMode,
           selectedOrder={selectedOrder}
           isAddOrderMode={isAddOrderMode}
           isEditOrderMode={isEditOrderMode}
-          onSetSelectedOrder={() => onSetSelectedOrder(order)}
-          onEditExistingOrderClick={() => onEditExistingOrderClick(order)}
-          onSaveExistingOrderClick={() => onSaveExistingOrderClick(order)}
+          onSetSelectedOrder={onSetSelectedOrder}
+          onEditExistingOrderClick={onEditExistingOrderClick}
+          onSaveExistingOrderClick={onSaveExistingOrderClick}
           onCancelExistingOrderClick={onCancelExistingOrderClick}
           onUpdateOrderDataInUi={onUpdateOrderDataInUi}
-          onDeleteExistingOrderClick={() => onDeleteExistingOrderClick(order)}
+          onDeleteExistingOrderClick={onDeleteExistingOrderClick}
           />
         ))}
         <OrderFooter 

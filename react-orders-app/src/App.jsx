@@ -219,7 +219,7 @@ function App(){
       setClients(dbClients);
     };
     fetchData();
-  }, [nameFilterText, currentPage, selectedOrder]);
+  }, [nameFilterText, currentPage, selectedOrder, isAddOrderMode]);
 
   return (
     <>

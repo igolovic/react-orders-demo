@@ -12,12 +12,19 @@ function OrderRow({clients, order, selectedOrder, isAddOrderMode, isEditOrderMod
         className={selectedOrder?.orderId === order.orderId ? "table-active" : ""}
         style={{ cursor: "pointer" }}
       >
-        <td>{isRowBeingEdited ? <input type="text" defaultValue={order.dateCreated} disabled={true} /> : <label>{order.dateCreated}</label>}</td>
-        <td>{isRowBeingEdited ? <input type="text" defaultValue={order.dateModified} disabled={true} /> : <label>{order.dateModified}</label>}</td>
+        <td>{isRowBeingEdited ? <input type="text" defaultValue={selectedOrder.dateCreated} disabled={true} /> : <label>{order.dateCreated}</label>}</td>
+        <td>{isRowBeingEdited ? <input type="text" defaultValue={selectedOrder.dateModified} disabled={true} /> : <label>{order.dateModified}</label>}</td>
         <td>
           {isRowBeingEdited ? <select type="selectClientEdit" 
-          value={order.clientId} 
-          onChange={e => onUpdateOrderDataInUi({...order, clientId: e.target.value})} 
+          value={selectedOrder.clientId} 
+          onChange={e => 
+            {
+              const selectedClientId = parseInt(e.target.value);
+              const selectedClient = clients.find(c => c.clientId === selectedClientId);
+
+              onUpdateOrderDataInUi({...selectedOrder, clientId: selectedClientId, clientName: selectedClient.name})
+            }
+          } 
           >
             {clients.map(client => (
               <option key={client.clientId} value={client.clientId}>{client.name}</option>
@@ -31,7 +38,7 @@ function OrderRow({clients, order, selectedOrder, isAddOrderMode, isEditOrderMod
           }
           {isRowBeingEdited
             &&
-            <button className="btn-sm btn btn-success" onClick={() => onSaveExistingOrderClick(order)}>Save</button>
+            <button className="btn-sm btn btn-success" onClick={() => onSaveExistingOrderClick(selectedOrder)}>Save</button>
           }
           {isRowBeingEdited
             &&

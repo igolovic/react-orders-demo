@@ -9,8 +9,9 @@ function OrderItemFooter({products, isAddOrderMode, isEditOrderMode, newNotAdded
           <select id="productSelectAdd"
             value={newNotAddedOrderItem?.productId ?? ""}
             onChange={e => {
-              const selectedProduct =  products.find(p => p.productId === parseInt(e.target.value ));
-              updateNewNotAddedOrderItem({...newNotAddedOrderItem, productId: e.target.value, unitPrice: selectedProduct?.unitPrice ?? 0})
+              const selectedProductId = parseInt(e.target.value);
+              const selectedProduct =  products.find(p => p.productId === parseInt(selectedProductId));
+              updateNewNotAddedOrderItem({...newNotAddedOrderItem, productId: selectedProductId, unitPrice: selectedProduct.unitPrice})
             }}
             disabled={!isNewOrderBeingEdited}>
             <option value="">Select product</option>
