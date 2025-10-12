@@ -14,9 +14,12 @@ function OrderTable({clients, orders, selectedOrder, totalCount, isAddOrderMode,
       <OrderHeader />
       <tbody>
         <OrderFilter
-         nameFilterText={nameFilterText} 
-         onSetNameFilterText={onSetNameFilterText}
-         />
+        nameFilterText={nameFilterText} 
+        onSetNameFilterText={onSetNameFilterText}
+        isAddOrderMode={isAddOrderMode}
+        isEditOrderMode={isEditOrderMode}
+        selectedOrder={selectedOrder}
+        />
         {orders.map(order => (
           <OrderRow
           key={order.orderId} 

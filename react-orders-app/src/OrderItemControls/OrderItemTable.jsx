@@ -15,7 +15,7 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
       orderItems: selectedOrder.orderItems.map(item =>
         item.productId === oldProductId 
         ? 
-        {...updatedOrderItem, unitPrice: products.find(oi => oi.productId === updateNewNotAddedOrderItem.productId)?.unitPrice} 
+        {...updatedOrderItem, unitPrice: products.find(oi => oi.productId === updatedOrderItem.productId)?.unitPrice} 
         :
         item
       )
