@@ -9,6 +9,7 @@ function OrderItemHeader(){
             <th>Product name</th>
             <th>Quantity</th>
             <th>Product price</th>
+            <th>Quantity * product price</th>
             <th></th>
           </tr>
         </thead>

@@ -13,7 +13,11 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
     let updatedSelectedOrder = {
       ...selectedOrder,
       orderItems: selectedOrder.orderItems.map(item =>
-        item.productId === oldProductId ? updatedOrderItem : item
+        item.productId === oldProductId 
+        ? 
+        {...updatedOrderItem, unitPrice: products.find(oi => oi.productId === updateNewNotAddedOrderItem.productId)?.unitPrice} 
+        :
+        item
       )
     };
     onOrderItemsChange(updatedSelectedOrder);
@@ -85,6 +89,7 @@ function OrderItemTable({products, selectedOrder, newNotAddedOrderItem, updateNe
             );
           })}
             <OrderItemFooter 
+              selectedOrder={selectedOrder}
               products={products}
               isAddOrderMode={isAddOrderMode}
               isEditOrderMode={isEditOrderMode}

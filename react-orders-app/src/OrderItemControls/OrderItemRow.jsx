@@ -8,29 +8,31 @@ function OrderItemRow({products, orderItem, isAddOrderMode, isEditOrderMode, onU
     <>
       <tr>
         <td>
-          {areControlsEditable ? (<select id="productSelectEdit"
+          {areControlsEditable 
+          ? <select id="productSelectEdit"
             value={orderItem?.productId ?? ""}
-            onChange={e => onUpdateOrderItem({...orderItem, productId: e.target.value}, orderItem.productId, true)}
+            onChange={e => onUpdateOrderItem({...orderItem, productId: parseInt(e.target.value)}, orderItem.productId, true)}
           >
             <option value="">Select a product</option>
             {products.map(product => (
               <option key={product.productId} value={product.productId}>{product.name}</option>
             ))}
-          </select>) : orderItem.productName}
-
+          </select> 
+          :
+           orderItem.productName}
         </td>
         <td>
           {areControlsEditable 
-            ? <input type="number" min={0} value={orderItem.quantity} 
-                onChange={e => {
-                  const value = e.target.value;
-                  if (isValidNumberOrEmpty(value)) {
-                    onUpdateOrderItem({...orderItem, quantity: e.target.value}, orderItem.productId, false);
-                  }
-                }} /> 
+            ? <input type="number" min={0} 
+              value={orderItem.quantity} 
+              onChange={e => {
+                const value = e.target.value;
+                if (isValidNumberOrEmpty(value)) {
+                  onUpdateOrderItem({...orderItem, quantity: parseInt(e.target.value)}, orderItem.productId, false);
+                }
+              }} /> 
             :
-            orderItem.quantity
-          }
+            orderItem.quantity}
         </td>
         <td>
           {areControlsEditable 
@@ -44,6 +46,13 @@ function OrderItemRow({products, orderItem, isAddOrderMode, isEditOrderMode, onU
               : 
               orderItem.unitPrice
               }
+        </td>
+        <td>
+          <input
+            type="text"
+            value={(orderItem.unitPrice * orderItem.quantity).toFixed(2)}
+            disabled
+          />
         </td>
         <td><button className="btn-sm btn btn-danger" onClick={() => onDeleteOrderItemClick(orderItem)} disabled={!areControlsEditable}>Delete</button></td>
       </tr>

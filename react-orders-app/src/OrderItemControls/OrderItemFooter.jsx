@@ -1,4 +1,4 @@
-function OrderItemFooter({products, isAddOrderMode, isEditOrderMode, newNotAddedOrderItem, updateNewNotAddedOrderItem, onAddNewOrderItemClick}){
+function OrderItemFooter({selectedOrder, products, isAddOrderMode, isEditOrderMode, newNotAddedOrderItem, updateNewNotAddedOrderItem, onAddNewOrderItemClick}){
 
   const isNewOrderBeingEdited = (isAddOrderMode || isEditOrderMode);
 
@@ -25,18 +25,27 @@ function OrderItemFooter({products, isAddOrderMode, isEditOrderMode, newNotAdded
           <input type="number"
           value={newNotAddedOrderItem?.quantity ?? 0}
           disabled={!isNewOrderBeingEdited}
-          onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, quantity: e.target.value})} /></td>
+          onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, quantity: e.target.value})} />
+        </td>
         <td>
           <input type="number"
           value={newNotAddedOrderItem?.unitPrice ?? 0}
           disabled
-          // onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, unitPrice: e.target.value})} 
           />
         </td>
         <td>
           <button className="btn-sm btn btn-primary"
           disabled={!isNewOrderBeingEdited}
           onClick={() => onAddNewOrderItemClick(newNotAddedOrderItem)}>Add order item</button>
+        </td>
+      </tr>
+      <tr>
+        <td colSpan="3">
+        </td>
+        <td>
+          <input type="text" disabled value={selectedOrder && selectedOrder.orderItems.reduce((acc, item) => {return acc + (item.unitPrice * item.quantity)}, 0).toFixed(2)} />
+        </td>
+        <td>
         </td>
       </tr>
     </>
