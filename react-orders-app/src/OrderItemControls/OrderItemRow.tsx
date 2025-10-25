@@ -1,7 +1,26 @@
-import { isValidNumberOrEmpty } from '../validation.js'
+// @ts-ignore: no declaration file for '../validation'
+import { isValidNumberOrEmpty } from '../validation'
+import type {OrderItem, Product} from '../types'
 
-function OrderItemRow({products, orderItem, isAddOrderMode, isEditOrderMode, onUpdateOrderItem, onDeleteOrderItemClick}) {
+interface OrderItemRowProps {
+  products: Product[];
+  orderItem: OrderItem;
+  isAddOrderMode: boolean;
+  isEditOrderMode: boolean;
+  onUpdateOrderItem: (updatedOrderItem: OrderItem, oldProductId: number, checkDuplicateProductInOrderItems: boolean) => void;
+  onDeleteOrderItemClick: (orderItem: OrderItem) => void;
+}
 
+// Component for a single row in the order items table
+function OrderItemRow(props: OrderItemRowProps) {
+  const { 
+    products, 
+    orderItem, 
+    isAddOrderMode,
+    isEditOrderMode, 
+    onUpdateOrderItem, 
+    onDeleteOrderItemClick } = props;
+  
   const areControlsEditable = isEditOrderMode || isAddOrderMode;
 
   return (
@@ -18,8 +37,8 @@ function OrderItemRow({products, orderItem, isAddOrderMode, isEditOrderMode, onU
               <option key={product.productId} value={product.productId}>{product.name}</option>
             ))}
           </select> 
-          :
-           orderItem.productName}
+          : products.find(p => p.productId === orderItem.productId)?.name
+          }
         </td>
         <td>
           {areControlsEditable 
@@ -40,7 +59,7 @@ function OrderItemRow({products, orderItem, isAddOrderMode, isEditOrderMode, onU
               onChange={e => {
                 const value = e.target.value;
                 if(isValidNumberOrEmpty(value)) {
-                  onUpdateOrderItem({...orderItem, unitPrice: e.target.value}, orderItem.productId, false);
+                  onUpdateOrderItem({...orderItem, unitPrice: parseInt(e.target.value)}, orderItem.productId, false);
                 }
               }} /> 
               : 

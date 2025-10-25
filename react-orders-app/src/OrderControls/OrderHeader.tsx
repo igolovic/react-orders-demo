@@ -1,5 +1,4 @@
-
-
+// Component for the header row in the orders table
 function OrderHeader(){
 
   return (

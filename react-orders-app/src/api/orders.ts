@@ -1,14 +1,16 @@
-import { PAGE_SIZE } from "../constants";
+import { PAGE_SIZE } from "../constants.js";
+import type { Order } from "../types.ts";
 
-export async function fetchOrders(filter, pageIndex) {
+// Fetches a paged list of orders with optional filtering
+export async function fetchOrders(filter: string, pageIndex: number) {
   const pageSize = PAGE_SIZE;
   const sortColumn = "DateCreated";
   const sortDirection = "DESC";
   const baseUrl = "http://localhost:5248/api/orders/paged";
 
   const params = new URLSearchParams({
-    pageIndex,
-    pageSize,
+    pageIndex: String(pageIndex),
+    pageSize: String(pageSize),
     sortColumn,
     sortDirection,
     filter
@@ -22,7 +24,8 @@ export async function fetchOrders(filter, pageIndex) {
   return response.json();
 }
 
-export async function saveOrder(order, isNew) {
+// Saves a new or existing order to the API
+export async function saveOrder(order: Order, isNew: boolean) {
   const baseUrl = "http://localhost:5248/api/orders";
   const method = isNew ? "POST" : "PUT";
   const url = isNew ? baseUrl : `${baseUrl}/${order.orderId}`;
@@ -38,7 +41,8 @@ export async function saveOrder(order, isNew) {
   return response.json();
 }
 
-export async function deleteOrder(orderId){
+// Deletes an order by ID
+export async function deleteOrder(orderId: number){
   const baseUrl = "http://localhost:5248/api/orders";
   const response = await fetch(`${baseUrl}/${orderId}`, {
     method: "DELETE",

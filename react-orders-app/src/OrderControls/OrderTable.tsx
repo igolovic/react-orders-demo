@@ -2,10 +2,55 @@ import OrderHeader from './OrderHeader'
 import OrderFilter from './OrderFilter'
 import OrderRow from './OrderRow' 
 import OrderFooter from './OrderFooter'
-import ReactPaginate from 'react-paginate';
-import {PAGE_SIZE} from '../constants.js'
+import {PAGE_SIZE} from '../constants'
+import type {Order, Client} from '../types'
 
-function OrderTable({clients, orders, selectedOrder, totalCount, isAddOrderMode, isEditOrderMode, onSetSelectedOrder, onEditExistingOrderClick, onSaveExistingOrderClick, onCancelExistingOrderClick, onNewOrderAddClick, onNewOrderSaveClick, onNewOrderCancelClick, onUpdateOrderDataInUi, onDeleteExistingOrderClick, nameFilterText, onSetNameFilterText, onPageClick}) {
+// @ts-ignore: no declaration file for 'react-paginate'
+import ReactPaginate from 'react-paginate'
+
+interface OrderTableProps {
+  clients: Client[];
+  orders: Order[];
+  selectedOrder: Order | null;
+  totalCount: number;
+  isAddOrderMode: boolean;
+  isEditOrderMode: boolean;
+  onSetSelectedOrder: (order:Order) => void;
+  onEditExistingOrderClick: (order:Order) => void;
+  onSaveExistingOrderClick: (order:Order) => void;
+  onCancelExistingOrderClick: () => void;
+  onNewOrderAddClick: () => void;
+  onNewOrderSaveClick: (order: Order) => void;
+  onNewOrderCancelClick: () => void;
+  onUpdateOrderDataInUi: (order:Order) => void;
+  onDeleteExistingOrderClick: (order:Order) => void;
+  nameFilterText: string;
+  onSetNameFilterText: (filterText: string) => void;
+  onPageClick: (selectedItem: { selected: number }) => void;
+}
+
+function OrderTable(props: OrderTableProps) {
+
+  const {
+    clients,
+    orders,
+    selectedOrder,
+    totalCount,
+    isAddOrderMode,
+    isEditOrderMode,
+    onSetSelectedOrder,
+    onEditExistingOrderClick,
+    onSaveExistingOrderClick,
+    onCancelExistingOrderClick,
+    onNewOrderAddClick,
+    onNewOrderSaveClick,
+    onNewOrderCancelClick,
+    onUpdateOrderDataInUi,
+    onDeleteExistingOrderClick,
+    nameFilterText,
+    onSetNameFilterText,
+    onPageClick
+  } = props;
 
   return (
     <>
