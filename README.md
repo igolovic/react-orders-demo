@@ -1,6 +1,6 @@
 # React Orders App
    
-<img width="1304" height="806" alt="image" src="https://github.com/user-attachments/assets/44a5b707-7a61-4e70-b7ce-806907814b99" />
+<img width="1449" height="894" alt="screenshot" src="https://github.com/user-attachments/assets/ff0cbde3-d940-466f-bcdb-b4068074734c" />
    
 This project is a full-stack demo application for managing customer orders, built with a React frontend and a .NET 9 backend.
 
