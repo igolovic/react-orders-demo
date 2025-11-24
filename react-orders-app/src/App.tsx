@@ -1,35 +1,39 @@
 import { useEffect, useState } from 'react'
+import { useFetchOrders, useSaveOrder, useDeleteOrder } from './hooks/useOrders'
+
 import OrderTable from './OrderControls/OrderTable'
 import OrderItemTable from './OrderItemControls/OrderItemTable'
 import { getClients } from './api/clients'
-// @ts-ignore: no declaration file for './api/orders'
-import { fetchOrders, saveOrder, deleteOrder } from './api/orders'
 // @ts-ignore: no declaration file for './api/products'
 import { getProducts } from './api/products'
 // @ts-ignore: no declaration file for './validation'
 import { validateOrder } from './validation.ts'
 // @ts-ignore: no declaration file for './App.css'
 import './App.css'
-import type {Order, OrderItem, Client, Product} from './types.ts'
+import type {PagedOrderDto, OrderItemDto, ClientDto, ProductDto} from './types.ts'
 
 function App(){
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
+  const [orders, setOrders] = useState<PagedOrderDto[]>([]);
+  const [products, setProducts] = useState<ProductDto[]>([]);
+  const [clients, setClients] = useState<ClientDto[]>([]);
   const [isAddOrderMode, setIsAddOrderMode] = useState(false);
   const [isEditOrderMode, setIsEditOrderMode] = useState(false);
-  const [selectedOrder, setSelectOrder] = useState<Order | null>(null);
-  const [newNotAddedOrderItem, setNewNotAddedOrderItem] = useState<OrderItem | null>(null);
-  const [originalOrder, setOriginalOrder] = useState<Order | null>(null);
+  const [selectedOrder, setSelectOrder] = useState<PagedOrderDto | null>(null);
+  const [newNotAddedOrderItem, setNewNotAddedOrderItem] = useState<OrderItemDto | null>(null);
+  const [originalOrder, setOriginalOrder] = useState<PagedOrderDto | null>(null);
   const [nameFilterText, onSetNameFilterText] = useState('');
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+
+  const { data, isLoading, error, refetch } = useFetchOrders(nameFilterText, currentPage);
+  const saveMutation = useSaveOrder();
+  const deleteMutation = useDeleteOrder();
 
   //////////////////////////////////////////////////
   // Functions to handle order selection and editing
   //////////////////////////////////////////////////
 
-  function handleEditExistingOrderClick(editedOrder: Order) {
+  function handleEditExistingOrderClick(editedOrder: PagedOrderDto) {
     setIsAddOrderMode(false);
     setIsEditOrderMode(true);
     setSelectOrder(editedOrder);
@@ -39,7 +43,7 @@ function App(){
     setOriginalOrder(clonedOrder);
   }
 
-  async function handleSaveExistingOrderClick(changedOrder: Order) {
+  async function handleSaveExistingOrderClick(changedOrder: PagedOrderDto) {
     const { valid, messages } = validateOrder(changedOrder);
     const errorMessage = getErrorMessage(messages);
     if (!valid) {
@@ -47,16 +51,16 @@ function App(){
       return;
     }
 
-    const order = await saveOrder(changedOrder, false);
+    const order = await saveMutation.mutateAsync({ order: changedOrder, isNew: false });
+    const refetchResult = await refetch();
 
-    const result: { pagedOrders: Order[]; totalCount: number } = await fetchOrders(nameFilterText, currentPage);
-    setOrders(result.pagedOrders);
-    setTotalCount(result.totalCount);
+    setOrders(refetchResult.data?.orders ?? []);
+    setTotalCount(refetchResult.data?.totalCount ?? 0);
 
     setIsEditOrderMode(false);
     setIsAddOrderMode(false);
 
-    const selectedOrderIsInResult = result.pagedOrders.find(po => po.orderId === order.orderId);
+    const selectedOrderIsInResult = refetchResult.data?.orders?.find(po => po.orderId === order?.orderId);
     if(selectedOrderIsInResult) {
         setSelectOrder(order);
     }
@@ -78,7 +82,7 @@ function App(){
         const originalOrders = orders.map(o => o.orderId === selectedOrder.orderId ? originalOrder : o);
         if (originalOrders)
         {
-          setOrders(originalOrders as Order[]);
+          setOrders(originalOrders as PagedOrderDto[]);
           setSelectOrder(originalOrder);
         }
     }   
@@ -86,7 +90,7 @@ function App(){
     setOriginalOrder(null);
   }
 
-  function handelUpdateOrderDataInUi(updatedOrder: Order) {
+  function handelUpdateOrderDataInUi(updatedOrder: PagedOrderDto) {
     const updatedOrders = orders.map(order => {
       if (order.orderId === updatedOrder.orderId) {
         return updatedOrder;
@@ -97,14 +101,14 @@ function App(){
     setSelectOrder(updatedOrder);
   }
 
-  async function handleDeleteExistingOrderClick(orderToDelete: Order) {
-    await deleteOrder(orderToDelete.orderId);
-    
-    const result: { pagedOrders: Order[]; totalCount: number } = await fetchOrders(nameFilterText, 0);
-    setOrders(result.pagedOrders);
-    setTotalCount(result.totalCount);
+  async function handleDeleteExistingOrderClick(orderToDelete: PagedOrderDto) {
+  await deleteMutation.mutateAsync(orderToDelete.orderId);
+  const refetchResult = await refetch();
 
-    setSelectOrder(null);
+  setOrders(refetchResult.data?.orders ?? []);
+  setTotalCount(refetchResult.data?.totalCount ?? 0);
+
+  setSelectOrder(null);
   }
 
   ////////////////////////////////
@@ -119,7 +123,7 @@ function App(){
     clearNewNotAddedOrderItem(setNewNotAddedOrderItem);
   }
 
-  async function handleNewOrderSaveClick(newOrder: Order) {
+  async function handleNewOrderSaveClick(newOrder: PagedOrderDto) {
     const { valid, messages } = validateOrder(newOrder);
     const errorMessage = getErrorMessage(messages);
     if (!valid) {
@@ -127,15 +131,14 @@ function App(){
       return;
     }
 
-    const order = await saveOrder(newOrder, true);
-
-    const result: { pagedOrders: Order[]; totalCount: number } = await fetchOrders(nameFilterText,	currentPage);
-    setOrders(result.pagedOrders);
-    setTotalCount(result.totalCount);
+    const order = await saveMutation.mutateAsync({ order: newOrder, isNew: true });
+    const refetchResult = await refetch();
+    setOrders(refetchResult.data?.orders ?? []);
+    setTotalCount(refetchResult.data?.totalCount ?? 0);
 
     setIsAddOrderMode(false);
-    
-    const selectedOrderIsInResult = result.pagedOrders.find(po => po.orderId === order.orderId);
+
+    const selectedOrderIsInResult = refetchResult.data?.orders?.find(po => po.orderId === order.orderId);
     if(selectedOrderIsInResult) {
         setSelectOrder(order);
     }
@@ -151,7 +154,7 @@ function App(){
     setSelectOrder(null);
   }
 
-  function handleSetSelectedOrder(updatedOrder: Order) {
+  function handleSetSelectedOrder(updatedOrder: PagedOrderDto) {
     setSelectOrder(updatedOrder);
   }
 
@@ -159,9 +162,9 @@ function App(){
     const selectedPage = selectedItem.selected;
     setCurrentPage(selectedPage);
 
-    const result: { pagedOrders: Order[]; totalCount: number } = await fetchOrders(nameFilterText, selectedPage);
-    setOrders(result.pagedOrders);
-    setTotalCount(result.totalCount);
+    const refetchResult = await refetch();
+    setOrders(refetchResult.data?.orders ?? []);
+    setTotalCount(refetchResult.data?.totalCount ?? 0);
   }
 
   /////////////////////////////////////////
@@ -169,7 +172,7 @@ function App(){
   /////////////////////////////////////////
 
   // This function is called when order items are added/updated/deleted
-  function handleOrderItemsChange(orderWithUpdatedItems: Order) {
+  function handleOrderItemsChange(orderWithUpdatedItems: PagedOrderDto) {
     const updatedOrders = orders.map(order => {
       if (order.orderId === orderWithUpdatedItems.orderId) {
         return orderWithUpdatedItems;
@@ -193,28 +196,29 @@ function App(){
   // Fetch data initially and on filter/page change
   ////////////////////////////
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result: { pagedOrders: Order[]; totalCount: number } = await fetchOrders(nameFilterText, currentPage);
-      setOrders(result.pagedOrders);
-
-      if (selectedOrder !== null) {
-        // If selected order was deleted or is not in the current page, and we are not adding new order, clear selection
-        const selectedOrderIsInResult = result.pagedOrders.find(po => po.orderId === selectedOrder.orderId);
-        if(!selectedOrderIsInResult && !isAddOrderMode) {
-            setSelectOrder(null);
-        }
+  //const { data, isLoading, error } = useOrders(nameFilterText, currentPage);
+      useEffect(() => {
+              if (data) {
+                  setOrders(data.orders);
+                  setTotalCount(data.totalCount);
+  
+                  if (selectedOrder !== null) {
+                      // If selected order was deleted or is not in the current page, and we are not adding new order, clear selection
+                      const selectedOrderIsInResult = data.orders.find(po => po.orderId === selectedOrder.orderId);
+                      if (!selectedOrderIsInResult && !isAddOrderMode) {
+                          setSelectOrder(null);
+                      }
+                  }
+              }
+              const asyncGetProductsAndClients = async () => {
+                  const dbProducts = await getProducts();
+                  setProducts(dbProducts);
+                  const dbClients = await getClients();
+                  setClients(dbClients);
+              };
+              asyncGetProductsAndClients();
       }
-      
-      setTotalCount(result.totalCount);
-
-      const dbProducts = await getProducts();
-      setProducts(dbProducts);
-      const dbClients = await getClients();
-      setClients(dbClients);
-    };
-    fetchData();
-  }, [nameFilterText, currentPage, selectedOrder, isAddOrderMode]);
+    , [data]);
 
   return (
     <>
@@ -253,7 +257,7 @@ function App(){
 
 export default App
 
-function clearSelectedOrder(setSelectOrder: (order: Order | null) => void) {
+function clearSelectedOrder(setSelectOrder: (order: PagedOrderDto | null) => void) {
   setSelectOrder(
     { 
       clientId: 0,
@@ -262,14 +266,14 @@ function clearSelectedOrder(setSelectOrder: (order: Order | null) => void) {
       dateModified: new Date(),
       orderId: 0, 
       orderItems: []
-    } as Order);
+    } as PagedOrderDto);
 }
 
-function clearNewNotAddedOrderItem(setNewNotAddedOrderItem: (item: OrderItem) => void) {
+function clearNewNotAddedOrderItem(setNewNotAddedOrderItem: (item: OrderItemDto) => void) {
   setNewNotAddedOrderItem({
     productId: 0,
     quantity: 0,
     unitPrice: 0
-  } as OrderItem);
+  } as OrderItemDto);
 }
 
