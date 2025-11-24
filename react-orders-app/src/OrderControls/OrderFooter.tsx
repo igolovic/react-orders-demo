@@ -1,13 +1,13 @@
-import type {Client, Order} from '../types'; 
+import type {ClientDto, PagedOrderDto} from '../types'; 
 
 interface OrderFooterProps {
-  clients: Client[];
+  clients: ClientDto[];
   isAddOrderMode: boolean;
   isEditOrderMode: boolean;
-  selectedOrder: Order | null ;
-  onUpdateOrderDataInUi: (order: Order) => void;
+  selectedOrder: PagedOrderDto | null ;
+  onUpdateOrderDataInUi: (order: PagedOrderDto) => void;
   onNewOrderAddClick: () => void;
-  onNewOrderSaveClick: (order: Order) => void;
+  onNewOrderSaveClick: (order: PagedOrderDto) => void;
   onNewOrderCancelClick: () => void;
 }
 
@@ -37,7 +37,7 @@ function OrderFooter(props: OrderFooterProps) {
       {isNewOrderBeingEdited &&
         <select id="clientSelectAdd"
           value={ selectedOrder?.clientId ?? ""}
-          onChange={e => props.onUpdateOrderDataInUi({...selectedOrder, clientId: parseInt(e.target.value)} as Order)}
+          onChange={e => props.onUpdateOrderDataInUi({...selectedOrder, clientId: parseInt(e.target.value)} as PagedOrderDto)}
           disabled={!isNewOrderBeingEdited}>
           <option value="">Select client</option>
           {

@@ -1,11 +1,11 @@
-import type { Order } from '../types';
+import type { PagedOrderDto } from '../types';
 
 interface OrderFilterProps {
   nameFilterText: string;
   onSetNameFilterText: (filterText: string) => void;
   isAddOrderMode: boolean;
   isEditOrderMode: boolean;
-  selectedOrder: Order | null;
+  selectedOrder: PagedOrderDto | null;
 }
 
 // Component for filtering orders by client name

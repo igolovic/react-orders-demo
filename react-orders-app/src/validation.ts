@@ -1,7 +1,7 @@
-import type {Order, OrderItem} from './types.ts'
+import type {PagedOrderDto, OrderItemDto} from './types.ts'
 
 // Performs complete validation on order and order items
-export function validateOrder(order: Order): { valid: boolean; messages: string[] } {
+export function validateOrder(order: PagedOrderDto): { valid: boolean; messages: string[] } {
   const messages: string[] = [];
 
   if (!order) {
@@ -37,7 +37,7 @@ export function validateOrder(order: Order): { valid: boolean; messages: string[
 }
 
 // Checks if a product is already in the order items (prevents duplicates)
-export function isDuplicateProductInOrderItems(orderItems: OrderItem[] | null, productId: number) {
+export function isDuplicateProductInOrderItems(orderItems: OrderItemDto[] | null, productId: number) {
   return orderItems?.some(item =>
     // onChange returns e.target.value as string, so convert to number for comparison
     item.productId === Number(productId)

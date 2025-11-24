@@ -1,28 +1,27 @@
-export interface OrderItem {
+export interface OrderItemDto {
   orderId: number;
   orderItemId: number;
   productId: number;
+  productName: string;
   quantity: number;
   unitPrice: number;
 }
 
-export interface Order {
+export interface PagedOrderDto {
   orderId: number;
   clientId: number;
   clientName: string;
   dateCreated: Date;
   dateModified: Date;
-  orderItems: OrderItem[];
+  orderItems: OrderItemDto[];
 }
 
-export interface Client {
+export interface ClientDto {
   clientId: number;
   name: string;
-  email: string;
-  phone: string;
 }
 
-export interface Product {
+export interface ProductDto {
   productId: number;
   name: string;
   unitPrice: number;

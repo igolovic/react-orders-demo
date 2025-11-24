@@ -3,27 +3,27 @@ import OrderFilter from './OrderFilter'
 import OrderRow from './OrderRow' 
 import OrderFooter from './OrderFooter'
 import {PAGE_SIZE} from '../constants'
-import type {Order, Client} from '../types'
+import type {PagedOrderDto, ClientDto} from '../types'
 
 // @ts-ignore: no declaration file for 'react-paginate'
 import ReactPaginate from 'react-paginate'
 
 interface OrderTableProps {
-  clients: Client[];
-  orders: Order[];
-  selectedOrder: Order | null;
+  clients: ClientDto[];
+  orders: PagedOrderDto[];
+  selectedOrder: PagedOrderDto | null;
   totalCount: number;
   isAddOrderMode: boolean;
   isEditOrderMode: boolean;
-  onSetSelectedOrder: (order:Order) => void;
-  onEditExistingOrderClick: (order:Order) => void;
-  onSaveExistingOrderClick: (order:Order) => void;
+  onSetSelectedOrder: (order:PagedOrderDto) => void;
+  onEditExistingOrderClick: (order:PagedOrderDto) => void;
+  onSaveExistingOrderClick: (order:PagedOrderDto) => void;
   onCancelExistingOrderClick: () => void;
   onNewOrderAddClick: () => void;
-  onNewOrderSaveClick: (order: Order) => void;
+  onNewOrderSaveClick: (order: PagedOrderDto) => void;
   onNewOrderCancelClick: () => void;
-  onUpdateOrderDataInUi: (order:Order) => void;
-  onDeleteExistingOrderClick: (order:Order) => void;
+  onUpdateOrderDataInUi: (order:PagedOrderDto) => void;
+  onDeleteExistingOrderClick: (order:PagedOrderDto) => void;
   nameFilterText: string;
   onSetNameFilterText: (filterText: string) => void;
   onPageClick: (selectedItem: { selected: number }) => void;

@@ -1,14 +1,14 @@
 // @ts-ignore: no declaration file for '../validation'
 import { isValidNumberOrEmpty } from '../validation'
-import type {OrderItem, Product} from '../types'
+import type {OrderItemDto, ProductDto} from '../types'
 
 interface OrderItemRowProps {
-  products: Product[];
-  orderItem: OrderItem;
+  products: ProductDto[];
+  orderItem: OrderItemDto;
   isAddOrderMode: boolean;
   isEditOrderMode: boolean;
-  onUpdateOrderItem: (updatedOrderItem: OrderItem, oldProductId: number, checkDuplicateProductInOrderItems: boolean) => void;
-  onDeleteOrderItemClick: (orderItem: OrderItem) => void;
+  onUpdateOrderItem: (updatedOrderItem: OrderItemDto, oldProductId: number, checkDuplicateProductInOrderItems: boolean) => void;
+  onDeleteOrderItemClick: (orderItem: OrderItemDto) => void;
 }
 
 // Component for a single row in the order items table

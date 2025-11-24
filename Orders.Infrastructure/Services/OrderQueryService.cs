@@ -78,7 +78,7 @@ namespace Orders.Infrastructure.OrderQueryService
             return new PagedOrdersResultDto
             {
                 TotalCount = totalCount,
-                PagedOrders = pagedOrderDtos
+                Orders = pagedOrderDtos
             };
         }
     }

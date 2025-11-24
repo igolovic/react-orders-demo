@@ -1,13 +1,13 @@
-import type {Order, OrderItem, Product} from '../types'
+import type {PagedOrderDto, OrderItemDto, ProductDto} from '../types'
 
 interface OrderItemFooterProps{
-  selectedOrder: Order | null
-  products: Product[];
+  selectedOrder: PagedOrderDto | null
+  products: ProductDto[];
   isAddOrderMode: boolean;
   isEditOrderMode: boolean;
-  newNotAddedOrderItem: OrderItem | null;
-  updateNewNotAddedOrderItem: (orderItem: OrderItem) => void;
-  onAddNewOrderItemClick: (orderItem: OrderItem) => void;
+  newNotAddedOrderItem: OrderItemDto | null;
+  updateNewNotAddedOrderItem: (orderItem: OrderItemDto) => void;
+  onAddNewOrderItemClick: (orderItem: OrderItemDto) => void;
 }
 
 // Component for the footer row in the order items table, handling new order item addition  
@@ -38,7 +38,7 @@ function OrderItemFooter(props: OrderItemFooterProps) {
             onChange={e => {
               const selectedProductId = parseInt(e.target.value);
               const selectedProduct =  products.find(p => p.productId === selectedProductId);
-              updateNewNotAddedOrderItem({...newNotAddedOrderItem, productId: selectedProductId, unitPrice: selectedProduct?.unitPrice} as OrderItem)
+              updateNewNotAddedOrderItem({...newNotAddedOrderItem, productId: selectedProductId, unitPrice: selectedProduct?.unitPrice} as OrderItemDto)
             }}
             disabled={!isNewOrderBeingEdited}>
             <option value="">Select product</option>
@@ -52,7 +52,7 @@ function OrderItemFooter(props: OrderItemFooterProps) {
           <input type="number"
           value={newNotAddedOrderItem?.quantity ?? 0}
           disabled={!isNewOrderBeingEdited}
-          onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, quantity: parseInt(e.target.value)} as OrderItem)}
+          onChange={e => updateNewNotAddedOrderItem({...newNotAddedOrderItem, quantity: parseInt(e.target.value)} as OrderItemDto)}
         />
         </td>
         <td>

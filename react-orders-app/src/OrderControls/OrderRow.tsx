@@ -1,17 +1,17 @@
-import type {Order, Client} from  '../types'
+import type {PagedOrderDto, ClientDto} from  '../types'
 
 interface OrderRowProps {
-  clients: Client[];
-  order: Order;
-  selectedOrder: Order | null;
+  clients: ClientDto[];
+  order: PagedOrderDto;
+  selectedOrder: PagedOrderDto | null;
   isAddOrderMode: boolean;
   isEditOrderMode: boolean;
-  onSetSelectedOrder: (order:Order) => void;
-  onEditExistingOrderClick: (order:Order) => void;
-  onSaveExistingOrderClick: (order:Order) => void;
+  onSetSelectedOrder: (order:PagedOrderDto) => void;
+  onEditExistingOrderClick: (order:PagedOrderDto) => void;
+  onSaveExistingOrderClick: (order:PagedOrderDto) => void;
   onCancelExistingOrderClick: () => void;
-  onUpdateOrderDataInUi: (order:Order) => void;
-  onDeleteExistingOrderClick: (order:Order) => void;
+  onUpdateOrderDataInUi: (order:PagedOrderDto) => void;
+  onDeleteExistingOrderClick: (order:PagedOrderDto) => void;
   }
 // Component for a single row in the orders table
 function OrderRow(props: OrderRowProps) {

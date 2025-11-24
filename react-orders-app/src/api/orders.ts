@@ -1,5 +1,5 @@
 import { PAGE_SIZE } from "../constants.js";
-import type { Order } from "../types.ts";
+import type { PagedOrderDto } from "../types.ts";
 
 // Fetches a paged list of orders with optional filtering
 export async function fetchOrders(filter: string, pageIndex: number) {
@@ -25,7 +25,7 @@ export async function fetchOrders(filter: string, pageIndex: number) {
 }
 
 // Saves a new or existing order to the API
-export async function saveOrder(order: Order, isNew: boolean) {
+export async function saveOrder(order: PagedOrderDto, isNew: boolean) {
   const baseUrl = "http://localhost:5248/api/orders";
   const method = isNew ? "POST" : "PUT";
   const url = isNew ? baseUrl : `${baseUrl}/${order.orderId}`;

@@ -3,16 +3,16 @@ import OrderItemRow from "./OrderItemRow.js"
 import OrderItemFooter from "./OrderItemFooter.js"
 // @ts-ignore: validation.js is a JS module without a declaration file
 import { isDuplicateProductInOrderItems } from '../validation'
-import type {Order, Product, OrderItem} from '../types'
+import type {PagedOrderDto, ProductDto, OrderItemDto} from '../types'
 
 interface OrderItemTableProps {
-  products: Product[];
-  selectedOrder: Order | null;
-  newNotAddedOrderItem: OrderItem | null;
-  updateNewNotAddedOrderItem: (orderItem: OrderItem) => void;
+  products: ProductDto[];
+  selectedOrder: PagedOrderDto | null;
+  newNotAddedOrderItem: OrderItemDto | null;
+  updateNewNotAddedOrderItem: (orderItem: OrderItemDto) => void;
   isAddOrderMode: boolean;
   isEditOrderMode: boolean;
-  onOrderItemsChange: (order: Order) => void;
+  onOrderItemsChange: (order: PagedOrderDto) => void;
 }
 
 // Component for the order items table within an order
@@ -26,12 +26,12 @@ function OrderItemTable(props: OrderItemTableProps) {
     isEditOrderMode,
     onOrderItemsChange } = props;
 
-  function handleUpdateOrderItem(updatedOrderItem: OrderItem, oldProductId: number, checkDuplicateProductInOrderItems: boolean) {
+  function handleUpdateOrderItem(updatedOrderItem: OrderItemDto, oldProductId: number, checkDuplicateProductInOrderItems: boolean) {
     if (checkDuplicateProductInOrderItems && isDuplicateProductInOrderItems(selectedOrder!.orderItems, updatedOrderItem.productId)) {
       alert("Order item with this product ID already exists.");
       return;
     }
-    const updatedSelectedOrder: Order = {
+    const updatedSelectedOrder: PagedOrderDto = {
       ...selectedOrder!,
       orderItems: selectedOrder?.orderItems.map(item =>
         item.productId === oldProductId
@@ -45,14 +45,14 @@ function OrderItemTable(props: OrderItemTableProps) {
     onOrderItemsChange(updatedSelectedOrder);
   }
 
-  function handleDeleteOrderItemClick(deletedOrderItem: OrderItem) {
+  function handleDeleteOrderItemClick(deletedOrderItem: OrderItemDto) {
     selectedOrder!.orderItems = selectedOrder!.orderItems.filter(
       oi => CreateTemporaryIdForUnsavedOrderItem(oi) !== CreateTemporaryIdForUnsavedOrderItem(deletedOrderItem)
     );
     onOrderItemsChange(selectedOrder!);
   }
 
-  function handleAddOrderItemClick(addedOrderItem: OrderItem) {
+  function handleAddOrderItemClick(addedOrderItem: OrderItemDto) {
     if (addedOrderItem.productId === null || addedOrderItem.productId === 0) {
       alert("Please select product.");
       return;
@@ -80,6 +80,7 @@ function OrderItemTable(props: OrderItemTableProps) {
       orderItemId: selectedOrder!.orderId,
       orderId: 0,
       productId: 0,
+      productName: '',
       unitPrice: 0,
       quantity: 0,
     });
@@ -126,6 +127,6 @@ function OrderItemTable(props: OrderItemTableProps) {
 
 export default OrderItemTable
 
-function CreateTemporaryIdForUnsavedOrderItem(oi: OrderItem): string {
+function CreateTemporaryIdForUnsavedOrderItem(oi: OrderItemDto): string {
   return `${oi.productId}_${oi.orderId}`;
 }
