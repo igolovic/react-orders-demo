@@ -52,15 +52,11 @@ function App(){
     }
 
     const order = await saveMutation.mutateAsync({ order: changedOrder, isNew: false });
-    const refetchResult = await refetch();
-
-    setOrders(refetchResult.data?.orders ?? []);
-    setTotalCount(refetchResult.data?.totalCount ?? 0);
 
     setIsEditOrderMode(false);
     setIsAddOrderMode(false);
 
-    const selectedOrderIsInResult = refetchResult.data?.orders?.find(po => po.orderId === order?.orderId);
+    const selectedOrderIsInResult = data?.orders?.find(po => po.orderId === order?.orderId);
     if(selectedOrderIsInResult) {
         setSelectOrder(order);
     }
@@ -90,7 +86,7 @@ function App(){
     setOriginalOrder(null);
   }
 
-  function handelUpdateOrderDataInUi(updatedOrder: PagedOrderDto) {
+  function handleUpdateOrderDataInUi(updatedOrder: PagedOrderDto) {
     const updatedOrders = orders.map(order => {
       if (order.orderId === updatedOrder.orderId) {
         return updatedOrder;
@@ -102,13 +98,8 @@ function App(){
   }
 
   async function handleDeleteExistingOrderClick(orderToDelete: PagedOrderDto) {
-  await deleteMutation.mutateAsync(orderToDelete.orderId);
-  const refetchResult = await refetch();
-
-  setOrders(refetchResult.data?.orders ?? []);
-  setTotalCount(refetchResult.data?.totalCount ?? 0);
-
-  setSelectOrder(null);
+    await deleteMutation.mutateAsync(orderToDelete.orderId); 
+    setSelectOrder(null);
   }
 
   ////////////////////////////////
@@ -132,13 +123,9 @@ function App(){
     }
 
     const order = await saveMutation.mutateAsync({ order: newOrder, isNew: true });
-    const refetchResult = await refetch();
-    setOrders(refetchResult.data?.orders ?? []);
-    setTotalCount(refetchResult.data?.totalCount ?? 0);
-
     setIsAddOrderMode(false);
 
-    const selectedOrderIsInResult = refetchResult.data?.orders?.find(po => po.orderId === order.orderId);
+    const selectedOrderIsInResult = data?.orders?.find(po => po.orderId === order.orderId);
     if(selectedOrderIsInResult) {
         setSelectOrder(order);
     }
@@ -161,10 +148,6 @@ function App(){
   async function handlePageClick(selectedItem: { selected: number }) {
     const selectedPage = selectedItem.selected;
     setCurrentPage(selectedPage);
-
-    const refetchResult = await refetch();
-    setOrders(refetchResult.data?.orders ?? []);
-    setTotalCount(refetchResult.data?.totalCount ?? 0);
   }
 
   /////////////////////////////////////////
@@ -224,7 +207,7 @@ function App(){
     <>
       <OrderTable 
       clients={clients}
-      orders={orders}
+      orders={data?.orders ?? []}
       selectedOrder={selectedOrder}
       totalCount={totalCount}
       isAddOrderMode={isAddOrderMode} 
@@ -236,7 +219,7 @@ function App(){
       onNewOrderAddClick={handleNewOrderAddClick}
       onNewOrderSaveClick={handleNewOrderSaveClick}
       onNewOrderCancelClick={handleNewOrderCancelClick}
-      onUpdateOrderDataInUi={handelUpdateOrderDataInUi}
+      onUpdateOrderDataInUi={handleUpdateOrderDataInUi}
       onDeleteExistingOrderClick={handleDeleteExistingOrderClick}
       nameFilterText={nameFilterText}
       onSetNameFilterText={onSetNameFilterText}
